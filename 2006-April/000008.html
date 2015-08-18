@@ -1,0 +1,719 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Posemuckel-svn] r34 - in trunk/Posemuckel/src/posemuckel/client/model: . event
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/posemuckel-svn/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r34%20-%20in%20trunk/Posemuckel/src/posemuckel/client/model%3A%20.%20event&In-Reply-To=%3C200604091702.k39H2hms020272%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000007.html">
+   <LINK REL="Next"  HREF="000009.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Posemuckel-svn] r34 - in trunk/Posemuckel/src/posemuckel/client/model: . event</H1>
+    <B>tabu at berlios.de</B> 
+    <A HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r34%20-%20in%20trunk/Posemuckel/src/posemuckel/client/model%3A%20.%20event&In-Reply-To=%3C200604091702.k39H2hms020272%40sheep.berlios.de%3E"
+       TITLE="[Posemuckel-svn] r34 - in trunk/Posemuckel/src/posemuckel/client/model: . event">tabu at berlios.de
+       </A><BR>
+    <I>Sun Apr  9 19:02:43 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000007.html">[Posemuckel-svn] r33 - trunk/Posemuckel/src/posemuckel
+</A></li>
+        <LI>Next message: <A HREF="000009.html">[Posemuckel-svn] r35 - trunk/Posemuckel/src/posemuckel/client/gui
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#8">[ date ]</a>
+              <a href="thread.html#8">[ thread ]</a>
+              <a href="subject.html#8">[ subject ]</a>
+              <a href="author.html#8">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: tabu
+Date: 2006-04-09 19:02:14 +0200 (Sun, 09 Apr 2006)
+New Revision: 34
+
+Added:
+   trunk/Posemuckel/src/posemuckel/client/model/OpenProjectExtension.java
+Modified:
+   trunk/Posemuckel/src/posemuckel/client/model/DecodeImage.java
+   trunk/Posemuckel/src/posemuckel/client/model/Model.java
+   trunk/Posemuckel/src/posemuckel/client/model/Project.java
+   trunk/Posemuckel/src/posemuckel/client/model/ProjectTask.java
+   trunk/Posemuckel/src/posemuckel/client/model/event/NotifyEvent.java
+Log:
+Habe den Bezeichner spaces durch seats ersetzt, soweit wie mir das aufgefallen war.
+
+Habe au?\195?\159erdem angefangen, aus der Klasse Project die Klasse OpenProject abzuleiten.
+OpenProjectExtension ist ein Hilfskonstrukt, um die Methoden und Datenfelder aus Project
+auszulagen. Der Commit erfolgt, weil ich heute keine Zeit mehr habe, an der Migration 
+weiterzuarbeiten
+
+tanja
+
+Modified: trunk/Posemuckel/src/posemuckel/client/model/DecodeImage.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/DecodeImage.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/DecodeImage.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -2,14 +2,12 @@
+ 
+ import java.io.ByteArrayInputStream;
+ import java.io.UnsupportedEncodingException;
+-import java.util.ArrayList;
+ 
+ import org.apache.commons.codec.binary.Base64;
+ import org.eclipse.swt.graphics.ImageData;
+ import org.eclipse.swt.graphics.ImageLoader;
+ 
+ import posemuckel.client.model.event.NotifyEvent;
+-import posemuckel.client.model.event.NotifyListener;
+ 	
+ 	/**
+ 	 * Diese Klasse dient einzig und allein der Decodierung
+@@ -56,13 +54,11 @@
+ 				ImageData[] imgdata = imageLoader.data;
+ 				NotifyEvent ne = new NotifyEvent(user, url, title, comment, imgdata[0]);
+ 				Project proj = Model.getModel().getOpenProject();
+-				ArrayList&lt;NotifyListener&gt; listener = proj.getListener();
+-				for (NotifyListener notifyListener : listener) {
+-					notifyListener.notify(ne);
+-				}
++				proj.fireNotifyEvent(ne);
+ 			} catch (UnsupportedEncodingException e) {
+ 				e.printStackTrace();
+ 			}
+ 		}
++		
+ 	}
+ 
+
+Modified: trunk/Posemuckel/src/posemuckel/client/model/Model.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/Model.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/Model.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -228,13 +228,13 @@
+ 		Project invitation = user.getInvitations().getProject(projectID);
+ 		//Projektdaten &#228;ndern
+ 		if(project != null) {
+-			project.changeFreeSpaces(change);
++			project.changeFreeSeats(change);
+ 		}		
+ 		if(userProject != null &amp;&amp; userProject != project) {
+-			userProject.changeFreeSpaces(change);
++			userProject.changeFreeSeats(change);
+ 		}		
+ 		if(invitation != null &amp;&amp; invitation != project &amp;&amp; invitation != userProject) {
+-			invitation.changeFreeSpaces(change);
++			invitation.changeFreeSeats(change);
+ 		}
+ 		//Listener benachrichtigen
+ 		getAllProjects().fireElementChanged(project, true);
+
+Added: trunk/Posemuckel/src/posemuckel/client/model/OpenProjectExtension.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/OpenProjectExtension.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/OpenProjectExtension.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -0,0 +1,221 @@
++/**
++ * 
++ */
++package posemuckel.client.model;
++
++import java.util.ArrayList;
++
++import posemuckel.client.model.event.ListenerManagment;
++import posemuckel.client.model.event.NotifyListener;
++
++/**
++ * Die OpenProjectExtension enth&#228;lt die Attribute und die Funktionalit&#228;t,
++ * die f&#252;r ein ge&#246;ffnetes Projekt ben&#246;tigt werden. Da das Projekt zwar beim
++ * &#214;ffnen seinen Zustand &#228;ndert, aber ansonsten im Wesentlichen das gleiche Objekt
++ * bleibt, wird die OpenProjectExtension als komplexes Attribut eines Project
++ * verwendet.
++ * 
++ * @author Posemuckel Team
++ *
++ */
++public class OpenProjectExtension {
++	
++	private Webtrace webtrace;
++	private String currentURL = &quot;&quot;;
++	private String previousURL = &quot;&quot;;
++	private String urlTitle = &quot;&quot;;
++	private boolean useViewing;
++	private String[] notifydata;
++	//TODO ListenerManagment &#252;bernehmen
++	private ListenerManagment&lt;NotifyListener&gt; listenerManagment;
++	private FollowMeManager followMe;
++	
++	private Project project;
++	
++	public OpenProjectExtension(Project basis) {
++		project = basis;
++	}
++	/**
++	 * Gibt den Webtrace des Projektes aus. Idealerweise sollte nur f&uuml;r 
++	 * das ge&#246;ffnete Projekt ein Webtrace vorhanden sein.
++	 * 
++	 * @return der Webtrace des Projektes
++	 */
++	public Webtrace getWebtrace() {
++		if(webtrace == null) {
++			//TODO Webtrace mit der Extension arbeiten lassen?
++			webtrace = new Webtrace(project);
++			String[] names = project.getMembers();
++			for (String name : names) {
++				webtrace.addUser(name);
++			}
++		}
++		return webtrace;
++	}
++	
++	/**
++	 * Setzt die URL, die der Anwender gerade besucht.
++	 * @param url , die der Anwender gerade besucht
++	 */
++	public void setCurrentURL(String url){
++		currentURL = url;
++	}
++	
++	/**
++	 * Gibt die zuletzt besuchte URL aus.
++	 * @return zuletzt besuchte URL
++	 */
++	public String getCurrentURL(){
++		return currentURL;
++	}
++
++	/**
++	 * Setzt die URL, die der Anwender vor der aktuellen URL besucht hat.
++	 * @param url 
++	 */
++	public void setPreviousURL(String url){
++		previousURL = url;
++	}
++
++	/**
++	 * Gibt die vorletzte besuchte URL von diesem Projekt aus.
++	 * @return vorletzte besuchte URL
++	 */
++	public String getPreviousURL(){
++		return previousURL;
++	}
++	
++	/**
++	 * Setzt den Titel der zuletzt besuchten Webseite.
++	 * @param title der zuletzt besuchten Webseite
++	 */
++	public void setUrlTitle(String title){
++		urlTitle =title;
++	}
++	
++	/**
++	 * Gibt den Titel der zuletzt besuchten Webseite aus.
++	 * @return Titel der zuletzt besuchten Webseite
++	 */
++	public String getUrlTitle(){
++		return urlTitle;
++	}
++	
++	/**
++	 * Teilt dem Projekt mit, dass der Browser vom Anwender gezwungen wird, zu einer 
++	 * URL zu springen. Das kann durch Setzen einer URL in der Adresszeile, &#252;ber den
++	 * Webtrace oder durch andere Buttons geschehen.
++	 * @param url , zu der gesprungen wird
++	 */
++	public void jumpToURL(String url) {
++		if(getWebtrace().getPageForUrl(url, getModel().getUser().getNickname()) == null) {
++			//der Anwender hat die Seite noch nicht besucht, also eine neue Wurzel
++			setCurrentURL(&quot;&quot;);
++		} else {
++			//der Anwender kennt die Seite schon
++			useViewing = true;
++			setCurrentURL(&quot;&quot;);
++		}
++	}
++	
++	/**
++	 * Teilt dem Projekt mit, dass nach M&#246;glichkeit eine Viewing-Nachricht anstelle
++	 * einer Visiting-Nachricht verwendet werden soll, wenn die n&#228;chste URL an
++	 * die Database versendet werden soll. Es ist nicht m&#246;glich, eine
++	 * Viewing-Nachricht zu verwenden, wenn der Anwender die URL noch nicht
++	 * besucht hat.
++	 *
++	 */
++	public void useViewing() {
++		setCurrentURL(&quot;&quot;);
++		useViewing = true;
++	}
++	
++	/**
++	 * Gibt den FollowMeManager des Projektes aus. Der FollowMeManager sollte nur 
++	 * f&#252;r ge&#246;ffnete Projekte verwendet werden.
++	 * @return FollowMeManager
++	 */
++	public FollowMeManager getFollowMeManager()  {
++		if(followMe == null) {
++			followMe = new FollowMeManager(getModel().getLogchat(),
++					getModel().getUser().getNickname());
++		}
++		return followMe;
++	}
++	
++	/**
++	 * Sendet eine Visiting- oder eine Viewing-Nachricht an die Database.
++	 *
++	 */
++	public void visiting() {
++		//wenn die URLs gleich sind, wird visiting nicht ausgef&#252;hrt
++		boolean doit = !getCurrentURL().equals(getPreviousURL());
++		if(doit) {
++			//wenn der Webtrace beide URLs f&#252;r den Anwender 
++			//schon gespeichert hat, wird visiting nicht ausgef&#252;hrt 
++			//das hat vor allem Einfluss auf den Back-und Forward-Button
++			doit = !webtrace.hasURL(getModel().getUser().getNickname(), getCurrentURL(), getPreviousURL());
++		}
++		//darf nur verwendet werden, wenn die URL auch tats&#228;chlich benutzt wurde
++		if(useViewing) {
++			useViewing = (null != webtrace.getPageForUrl(
++					getCurrentURL(),getModel().getUser().getNickname()));
++		}
++		if(doit &amp;&amp; !useViewing) {
++			new ProjectTask(getModel().getUser().getProjects(), project).execute(ProjectTask.VISITING);		
++		} else if(getModel().getUser().getURL() != getCurrentURL()){
++			//die Anzeige im Browser wurde ge&#228;ndert
++			useViewing = false;
++			new WebTraceTask(getWebtrace()).execute(WebTraceTask.VIEWING);
++		}
++	}
++	
++	private Model getModel() {
++		return project.getModel();
++	}
++	/**
++	 * Holt die Daten f&#252;r die Natifikation.
++	 * 
++	 * @return Die Notifikationsdaten als String-Array.
++	 */
++	public String[] getNotify() {
++		return notifydata;
++	}
++	public void notify(String url, String title, String comment, String datalen, String imagedata, String[] user) {
++		notifydata = new String[user.length+5];
++		notifydata[0] = url;
++		notifydata[1] = title;
++		notifydata[2] = comment;
++		notifydata[3] = datalen;
++		notifydata[4] = imagedata;
++		for (int i=5; i &lt; notifydata.length; i++)
++			notifydata[i] = user[i-5];
++	
++		new ProjectTask(null, project).execute(ProjectTask.NOTIFY);
++	}
++	/**
++	 * Informiert die Listener, dass eine Notify-Nachricht von der Database an die
++	 * Empf&#228;nger weitergeleitet wurde.
++	 * @param project TODO
++	 *
++	 */
++	protected void fireNotifyConfirmation() {
++		ArrayList&lt;NotifyListener&gt; listener = project.getListener();
++		for (NotifyListener notifyListener : listener) {
++			notifyListener.ack();
++		}
++	}
++	/**
++	 * Informiert die Listener, dass der Anwender eine neue URL angeklickt hat.
++	 * @param url die neue URL
++	 */
++	public void fireNewURL(String url) {
++		//TODO warum sollte das &#252;ber den NotifyListener laufen?
++		ArrayList&lt;NotifyListener&gt; listener = project.getListener();		
++		for (NotifyListener notifyListener : listener) {
++			notifyListener.newurl(url);
++		}
++	}
++
++}
+
+Modified: trunk/Posemuckel/src/posemuckel/client/model/Project.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/Project.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/Project.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -6,6 +6,7 @@
+ import java.util.ArrayList;
+ 
+ import posemuckel.client.model.event.ListenerManagment;
++import posemuckel.client.model.event.NotifyEvent;
+ import posemuckel.client.model.event.NotifyListener;
+ 
+ 
+@@ -23,7 +24,6 @@
+  */
+ public class Project {
+ 	//TODO den Teil zum ge&#246;ffneten Projekt in eine separate Klasse verschieben?
+-	//TODO fire
+ 	public static final String PUBLIC_TYPE = &quot;1&quot;;
+ 	public static final String PRIVATE_TYPE = &quot;0&quot;;
+ 	
+@@ -42,7 +42,7 @@
+ 	private MemberList members;
+ 	private Model model;
+ 	private String freeSeats;
+-	private String spaces;
++	private String seats;
+ 	private String chatID;
+ 	private String date;
+ 	private boolean open;
+@@ -50,15 +50,9 @@
+ 	/**
+ 	 * nur f&#252;r ge&#246;ffnete Projekte relevant
+ 	 */
++	private OpenProjectExtension openExt;
+ 	
+-	private Webtrace webtrace;
+-	private String currentURL = &quot;&quot;;
+-	private String previousURL = &quot;&quot;;
+-	private String urlTitle = &quot;&quot;;
+-	private boolean useViewing;
+-	private String[] notifydata;
+ 	private ListenerManagment&lt;NotifyListener&gt; listenerManagment;
+-	private FollowMeManager followMe;
+ 	
+ 	/**
+ 	 * Erstellt ein neues Projekt. Diese Methode sollte nur verwendet werden, 
+@@ -86,7 +80,7 @@
+ 	 * @return Die Notifikationsdaten als String-Array.
+ 	 */
+ 	public String[] getNotify() {
+-		return notifydata;
++		return openExt.getNotify();
+ 	}
+ 	
+ 	/**
+@@ -107,14 +101,7 @@
+ 	 * @return der Webtrace des Projektes
+ 	 */
+ 	public Webtrace getWebtrace() {
+-		if(webtrace == null) {
+-			webtrace = new Webtrace(this);
+-			String[] names = members.getNicknames();
+-			for (String name : names) {
+-				webtrace.addUser(name);
+-			}
+-		}
+-		return webtrace;
++		return openExt.getWebtrace();
+ 	}
+ 	
+ 	/**
+@@ -144,7 +131,7 @@
+ 		this.topic = topic;
+ 		this.owner = owner;
+ 		this.freeSeats = freeSeats;
+-		this.spaces = spaces;
++		this.seats = spaces;
+ 		this.description = description;
+ 		this.ispublic = isPublic;
+ 		this.date = date;
+@@ -187,7 +174,7 @@
+ 		this.topic = topic;
+ 		this.owner = owner;
+ 		this.freeSeats = freeSeats;
+-		this.spaces = spaces;
++		this.seats = spaces;
+ 		this.description = description;
+ 		this.ispublic = isPublic;		
+ 	}
+@@ -198,7 +185,7 @@
+ 	 * @param max maximale Teilnehmerzahl
+ 	 */
+ 	public void setMaxNumber(int max) {
+-		this.spaces = String.valueOf(max);
++		this.seats = String.valueOf(max);
+ 	}
+ 	
+ 	/**
+@@ -264,7 +251,7 @@
+ 	 * @return Zahl der Pl&auml;tze
+ 	 */
+ 	public String getMaxNumber() {
+-		return spaces;
++		return seats;
+ 	}
+ 
+ 	/**
+@@ -356,7 +343,7 @@
+ 	 * &Auml;ndert die Zahl der freien Pl&auml;tze im Projekt.
+ 	 * @param change Anstieg oder Verringerung der Zahl der freien Pl&#228;tze
+ 	 */
+-	protected void changeFreeSpaces(int change) {
++	protected void changeFreeSeats(int change) {
+ 		int oldValue = new Integer(freeSeats).intValue();
+ 		oldValue = oldValue + change;
+ 		freeSeats = String.valueOf(oldValue);
+@@ -368,6 +355,7 @@
+ 	 */
+ 	void setOpen(String chatID) {
+ 		open = true;
++		openExt = new OpenProjectExtension(this);
+ 		this.chatID = chatID;
+ 	}
+ 	
+@@ -400,7 +388,7 @@
+ 	 * @param url , die der Anwender gerade besucht
+ 	 */
+ 	public void setCurrentURL(String url){
+-		currentURL = url;
++		openExt.setCurrentURL(url);
+ 	}
+ 	
+ 	/**
+@@ -408,7 +396,7 @@
+ 	 * @param url 
+ 	 */
+ 	public void setPreviousURL(String url){
+-		previousURL = url;
++		openExt.setPreviousURL(url);
+ 	}
+ 	
+ 	/**
+@@ -418,30 +406,15 @@
+ 	 * @param url , zu der gesprungen wird
+ 	 */
+ 	public void jumpToURL(String url) {
+-		if(getWebtrace().getPageForUrl(url, model.getUser().getNickname()) == null) {
+-			//der Anwender hat die Seite noch nicht besucht, also eine neue Wurzel
+-			setCurrentURL(&quot;&quot;);
+-		} else {
+-			//der Anwender kennt die Seite schon
+-			useViewing = true;
+-			setCurrentURL(&quot;&quot;);
+-		}
++		openExt.jumpToURL(url);
+ 	}
+ 	
+ 	/**
+-	 * Setzt den Titel der zuletzt besuchten Webseite.
+-	 * @param title der zuletzt besuchten Webseite
+-	 */
+-	public void setUrlTitle(String title){
+-		urlTitle =title;
+-	}
+-	
+-	/**
+ 	 * Gibt die zuletzt besuchte URL aus.
+ 	 * @return zuletzt besuchte URL
+ 	 */
+ 	public String getCurrentURL(){
+-		return currentURL;
++		return openExt.getCurrentURL();
+ 	}
+ 	
+ 	/**
+@@ -449,42 +422,29 @@
+ 	 * @return vorletzte besuchte URL
+ 	 */
+ 	public String getPreviousURL(){
+-		return previousURL;
++		return openExt.getPreviousURL();
+ 	}
+ 	
+-	/**
+-	 * Gibt den Titel der zuletzt besuchten Webseite aus.
+-	 * @return Titel der zuletzt besuchten Webseite
++	/* (non-Javadoc)
++	 * @see posemuckel.client.model.OpenProjectExtension#getUrlTitle()
+ 	 */
+-	public String getUrlTitle(){
+-		return urlTitle;
++	public String getUrlTitle() {
++		return openExt.getUrlTitle();
+ 	}
+-	
++
++	/* (non-Javadoc)
++	 * @see posemuckel.client.model.OpenProjectExtension#setUrlTitle(java.lang.String)
++	 */
++	public void setUrlTitle(String title) {
++		openExt.setUrlTitle(title);
++	}
++
+ 	/**
+ 	 * Sendet eine Visiting- oder eine Viewing-Nachricht an die Database.
+ 	 *
+ 	 */
+ 	public void visiting() {
+-		//wenn die URLs gleich sind, wird visiting nicht ausgef&#252;hrt
+-		boolean doit = !getCurrentURL().equals(getPreviousURL());
+-		if(doit) {
+-			//wenn der Webtrace beide URLs f&#252;r den Anwender 
+-			//schon gespeichert hat, wird visiting nicht ausgef&#252;hrt 
+-			//das hat vor allem Einfluss auf den Back-und Forward-Button
+-			doit = !webtrace.hasURL(model.getUser().getNickname(), getCurrentURL(), getPreviousURL());
+-		}
+-		//darf nur verwendet werden, wenn die URL auch tats&#228;chlich benutzt wurde
+-		if(useViewing) {
+-			useViewing = (null != webtrace.getPageForUrl(
+-					getCurrentURL(),model.getUser().getNickname()));
+-		}
+-		if(doit &amp;&amp; !useViewing) {
+-			new ProjectTask(model.getUser().getProjects(), this).execute(ProjectTask.VISITING);		
+-		} else if(getModel().getUser().getURL() != getCurrentURL()){
+-			//die Anzeige im Browser wurde ge&#228;ndert
+-			useViewing = false;
+-			new WebTraceTask(getWebtrace()).execute(WebTraceTask.VIEWING);
+-		}
++		openExt.visiting();
+ 	}
+ 	
+ 	/**
+@@ -496,35 +456,36 @@
+ 	 *
+ 	 */
+ 	public void useViewing() {
+-		setCurrentURL(&quot;&quot;);
+-		useViewing = true;
++		openExt.useViewing();
+ 	}
+ 
+ 	public void notify(String url, String title, String comment, String datalen, String imagedata, String[] user) {
+-		this.notifydata = new String[user.length+5];
+-		notifydata[0] = url;
+-		notifydata[1] = title;
+-		notifydata[2] = comment;
+-		notifydata[3] = datalen;
+-		notifydata[4] = imagedata;
+-		for (int i=5; i &lt; notifydata.length; i++)
+-			notifydata[i] = user[i-5];
++		openExt.notify(url, title, comment, datalen, imagedata, user);
++	}
+ 	
+-		new ProjectTask(null, this).execute(ProjectTask.NOTIFY);
++	/**
++	 * Informiert die Listener, dass eine Notify-Nachricht von der Database an die
++	 * Empf&#228;nger weitergeleitet wurde.
++	 *
++	 */
++	protected void fireNotifyConfirmation() {
++		openExt.fireNotifyConfirmation();
+ 	}
+ 	
+-	protected void confirmNotify() {
+-		ArrayList&lt;NotifyListener&gt; listener = getListener();
+-		for (NotifyListener notifyListener : listener) {
+-			notifyListener.ack();
+-		}
++	/**
++	 * Informiert die Listener, dass der Anwender eine neue URL angeklickt hat.
++	 * @param url die neue URL
++	 */
++	public void fireNewURL(String url) {
++		openExt.fireNewURL(url);
+ 	}
+ 	
+-	public void newURL(String url) {
+-		ArrayList&lt;NotifyListener&gt; listener = getListener();		
+-		for (NotifyListener notifyListener : listener) {
+-			notifyListener.newurl(url);
+-		}
++	/**
++	 * Informiert die Listener &#252;ber ein neues NotifyEvent.
++	 * @param event das NotifyEvent
++	 */
++	public void fireNotifyEvent(NotifyEvent event) {
++		event.fireNotifyEvent(this);
+ 	}
+ 	
+ 	/**
+@@ -533,10 +494,7 @@
+ 	 * @return FollowMeManager
+ 	 */
+ 	public FollowMeManager getFollowMeManager()  {
+-		if(followMe == null) {
+-			followMe = new FollowMeManager(model.getLogchat(), model.getUser().getNickname());
+-		}
+-		return followMe;
++		return openExt.getFollowMeManager();
+ 	}
+ 	
+ 	/**
+
+Modified: trunk/Posemuckel/src/posemuckel/client/model/ProjectTask.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/ProjectTask.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/ProjectTask.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -144,7 +144,7 @@
+ 			projects.confirmDelProject(project);
+ 			break;
+ 		case Database.ACK + NOTIFY:
+-			project.confirmNotify();
++			project.fireNotifyConfirmation();
+ 			break;
+ 		default:
+ 			break;
+
+Modified: trunk/Posemuckel/src/posemuckel/client/model/event/NotifyEvent.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/event/NotifyEvent.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/event/NotifyEvent.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -1,8 +1,12 @@
+ package posemuckel.client.model.event;
+ 
++import java.util.ArrayList;
++
+ import org.eclipse.swt.graphics.ImageData;
+ 
++import posemuckel.client.model.Project;
+ 
++
+ /**
+  * Dieses Event dient der hochhalten-Funktion.
+  * Hier werden die entsprechenden Daten drin geseichert.
+@@ -45,4 +49,15 @@
+ 	public ImageData getImageData() {
+ 		return imagedata;
+ 	}
++
++	/**
++	 * Informiert die Listener &#252;ber ein neues NotifyEvent.
++	 * @param project TODO
++	 */
++	public void fireNotifyEvent(Project project) {
++		ArrayList&lt;NotifyListener&gt; listener = project.getListener();
++		for (NotifyListener notifyListener : listener) {
++			notifyListener.notify(this);
++		}
++	}
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000007.html">[Posemuckel-svn] r33 - trunk/Posemuckel/src/posemuckel
+</A></li>
+	<LI>Next message: <A HREF="000009.html">[Posemuckel-svn] r35 - trunk/Posemuckel/src/posemuckel/client/gui
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#8">[ date ]</a>
+              <a href="thread.html#8">[ thread ]</a>
+              <a href="subject.html#8">[ subject ]</a>
+              <a href="author.html#8">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/posemuckel-svn">More information about the Posemuckel-svn
+mailing list</a><br>
+</body></html>

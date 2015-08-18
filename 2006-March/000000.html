@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Posemuckel-svn] r25 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/posemuckel-svn/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r25%20-%20trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer&In-Reply-To=%3C200603161350.k2GDonbt021984%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000001.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Posemuckel-svn] r25 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer</H1>
+    <B>tabu at berlios.de</B> 
+    <A HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r25%20-%20trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer&In-Reply-To=%3C200603161350.k2GDonbt021984%40sheep.berlios.de%3E"
+       TITLE="[Posemuckel-svn] r25 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer">tabu at berlios.de
+       </A><BR>
+    <I>Thu Mar 16 14:50:49 CET 2006</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000001.html">[Posemuckel-svn] r26 - in trunk/Posemuckel: build-dist lib
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#0">[ date ]</a>
+              <a href="thread.html#0">[ thread ]</a>
+              <a href="subject.html#0">[ subject ]</a>
+              <a href="author.html#0">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: tabu
+Date: 2006-03-16 14:50:08 +0100 (Thu, 16 Mar 2006)
+New Revision: 25
+
+Modified:
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/WebtraceTable.java
+Log:
+Wenn auf eine Webseite im FolderTree geklickt wird, werden die
+Angaben zur Bewertung unter der Tabelle mit den URLs angezeigt.
+Wenn im FolderTree keine Webseite selektiert wird, bleibt die
+vorherige Anzeige stehen. 
+
+Damit der Anwender weiss, f?\195?\188r welche URL gerade die Bewertungen
+angezeigt werden, wird der Titel der URL hinter dem Label
+'Einzelwertung' angezeigt.
+
+tanja
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java	2006-03-13 17:40:44 UTC (rev 24)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java	2006-03-16 13:50:08 UTC (rev 25)
+@@ -47,6 +47,7 @@
+ 	private TableViewer tableViewer;
+ 	private Webpage input;
+ 	private Text description_widget;
++	private Label label_rating;
+ 	private MyListener listener;
+ 	private Model model;
+ 	
+@@ -64,8 +65,11 @@
+ 	
+ 	protected void setInput(Webpage page) {
+ 		if((page != null) &amp;&amp; (tableViewer != null)) {
++			System.out.println(&quot;setLabel &quot; + label_rating.getText());
+ 			tableViewer.setInput(page);
+ 			input = page;
++			label_rating.setText(
++					GetText.gettext(&quot;SINGLE_RATING&quot;) + &quot;: &quot; + page.getTitle());
+ 			model.getOpenProject().getWebtrace().loadNotes(page.getURL());
+ 		}
+ 	}
+@@ -78,10 +82,11 @@
+ 		Composite notesComp = new Composite(sash, SWT.NONE);
+ 		notesComp.setLayout(MyLayoutFactory.createGrid(1, false));
+ 		
+-		Label label_rating = new Label(ratingComp, SWT.SHADOW_NONE);
++		label_rating = new Label(ratingComp, SWT.SHADOW_NONE);
+ 		label_rating.setText(GetText.gettext(&quot;SINGLE_RATING&quot;));	
+-		GridData data1 = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
++		GridData data1 = new GridData(GridData.FILL_HORIZONTAL);
+ 		data1.verticalSpan = 1;
++		//data1.grabExcessHorizontalSpace = true;
+ 		data1.horizontalSpan = 1;
+ 		label_rating.setLayoutData(data1);
+ 		
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java	2006-03-13 17:40:44 UTC (rev 24)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java	2006-03-16 13:50:08 UTC (rev 25)
+@@ -27,7 +27,6 @@
+ import org.eclipse.swt.widgets.Listener;
+ import org.eclipse.swt.widgets.Menu;
+ import org.eclipse.swt.widgets.Shell;
+-import org.eclipse.swt.widgets.Text;
+ import org.eclipse.swt.widgets.Tree;
+ import org.eclipse.swt.widgets.TreeItem;
+ 
+@@ -45,11 +44,11 @@
+ 
+ public class ResultDialog extends Dialog {
+ 
+-	private Text text_selection;
+ 	private TreeViewer resultsViewer;
+ 	private ResultsViewerLabelProvider labelProvider;
+ 	public static final int RATING = 100;
+ 	private Model model;
++	private RatingTable singleRating;
+ 	
+ 	public ResultDialog(Shell shell) {
+ 		super(shell);
+@@ -67,31 +66,19 @@
+ 		//layout.marginHeight = 2;
+ 		comp.setLayout(layout);
+ 		GridData layoutData = new GridData();
+-
+-		// ein read-only Textfeld zur Anzeige der Anmerkungen -&gt; Select &amp; Copy m&#246;glich
+-		/* funzt irgendwie nicht richtig, daher erst mal deaktiviert
+-		 * Davon abgesehen sollten Bewertungne und Kommentare idealerweise 
+-		 * in den gleichen Feldern wie die der Tabelle eingeblendet werden
+-		 */
+-		//text_selection = new Text(comp, SWT.READ_ONLY | SWT.BORDER);
+-		//layoutData.horizontalSpan = 1;
+-		//layoutData.grabExcessHorizontalSpace = true;
+-		//layoutData.horizontalAlignment = GridData.FILL;
+-		//text_selection.setLayoutData(layoutData);
+-
+ 		// Create the tree viewer as a child of the composite comp
+ 		SashForm sash = new SashForm(comp, SWT.HORIZONTAL);
+ 		layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+ 		layoutData.minimumHeight=500;
+ 		layoutData.minimumWidth=800;
+ 		sash.setLayoutData(layoutData);
+-		addTable(sash);
++		singleRating = addTable(sash);
+ 		resultsViewer = new TreeViewer(sash);
+ 		resultsViewer.setContentProvider(new ResultsViewerContentProvider());
+ 		//labelProvider = new ResultsViewerLabelProvider();
+ 		labelProvider = new ResultsViewerLabelProvider(TreeIcons.getIcons());
+ 		resultsViewer.setLabelProvider(labelProvider);
+-		
++		addListeners();
+ 		resultsViewer.setUseHashlookup(true);
+ 		
+ 		// layout the tree viewer
+@@ -121,15 +108,22 @@
+ 		getShell().setImage(ImageManagment.getRegistry().get(ImageManagment.SHELL_ICON));
+ 		return comp;
+ 	}
+-	
+-		protected void addTable(Composite parent) {
++		
++	/**
++	 * Erzeugt die Tabelle zur Anzeige der URLs, die eine Mindestbewertung erhalten
++	 * haben. 
++	 * @param parent Composite, in dem die Tabelle angezeigt werden soll
++	 * @return RatingTable, in dem die Einzelwertungen angezeigt werden
++	 */
++		protected RatingTable addTable(Composite parent) {
+ 			Composite child = new Composite(parent, SWT.NONE);
+ 			child.setLayout(MyLayoutFactory.createGrid(1, true));
+ 			Composite tvComp = new Composite(child, SWT.NONE);
+ 			tvComp.setLayout(new FillLayout());	
+ 			tvComp.setLayoutData(getGridData());
+-			new WebtraceTable(tvComp, model.getOpenProject().getWebtrace(), model);
+-	
++			return new WebtraceTable(tvComp, 
++					model.getOpenProject().getWebtrace(), model).getRatingTable();
++			//die Instanz von RatingTable abfragen und zur&#252;ckgeben			
+ 	}
+ 		
+ 		private GridData getGridData() {
+@@ -141,16 +135,19 @@
+ 
+ 	protected void addListeners() {
+ 		resultsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
++			//TODO an die Kommentare anschliessen
+ 			public void selectionChanged(SelectionChangedEvent event) {
+-				// if the selection is empty clear the label
++				// if the selection is empty do nothing
+ 				if(event.getSelection().isEmpty()) {
+-					text_selection.setText(&quot;&quot;);
+ 					return;
+ 				}
+ 				if(event.getSelection() instanceof IStructuredSelection) {
+ 					IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+ 					Object selected = (Root) selection.getFirstElement();
+-					text_selection.setText(labelProvider.getText(selected, RATING));
++					if(selected instanceof Webpage) {
++						singleRating.setInput((Webpage)selected);
++					}
++					//text_selection.setText(labelProvider.getText(selected, RATING));
+ 				}
+ 			}
+ 		});
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/WebtraceTable.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/WebtraceTable.java	2006-03-13 17:40:44 UTC (rev 24)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/WebtraceTable.java	2006-03-16 13:50:08 UTC (rev 25)
+@@ -123,6 +123,10 @@
+ 		return listener;
+ 	}
+ 	
++	protected RatingTable getRatingTable() {
++		return singleRating;
++	}
++	
+ 	/**
+ 	 * Stattet die Tabelle mit einem Filter aus, so dass nur Webseiten mit einer
+ 	 * Durchschnittswertung von mindestens 3 Punkten angezeigt werden.
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000001.html">[Posemuckel-svn] r26 - in trunk/Posemuckel: build-dist lib
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#0">[ date ]</a>
+              <a href="thread.html#0">[ thread ]</a>
+              <a href="subject.html#0">[ subject ]</a>
+              <a href="author.html#0">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/posemuckel-svn">More information about the Posemuckel-svn
+mailing list</a><br>
+</body></html>

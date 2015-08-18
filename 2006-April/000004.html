@@ -1,0 +1,366 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Posemuckel-svn] r30 - in trunk/Posemuckel: build-dist src/posemuckel/client/net src/posemuckel/server
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/posemuckel-svn/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r30%20-%20in%20trunk/Posemuckel%3A%20build-dist%20src/posemuckel/client/net%20src/posemuckel/server&In-Reply-To=%3C200604021020.k32AKXAx027023%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000005.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Posemuckel-svn] r30 - in trunk/Posemuckel: build-dist src/posemuckel/client/net src/posemuckel/server</H1>
+    <B>papa_pasta at BerliOS</B> 
+    <A HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r30%20-%20in%20trunk/Posemuckel%3A%20build-dist%20src/posemuckel/client/net%20src/posemuckel/server&In-Reply-To=%3C200604021020.k32AKXAx027023%40sheep.berlios.de%3E"
+       TITLE="[Posemuckel-svn] r30 - in trunk/Posemuckel: build-dist src/posemuckel/client/net src/posemuckel/server">papa_pasta at berlios.de
+       </A><BR>
+    <I>Sun Apr  2 12:20:33 CEST 2006</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000005.html">[Posemuckel-svn] r31 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#4">[ date ]</a>
+              <a href="thread.html#4">[ thread ]</a>
+              <a href="subject.html#4">[ subject ]</a>
+              <a href="author.html#4">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: papa_pasta
+Date: 2006-04-02 12:20:30 +0200 (Sun, 02 Apr 2006)
+New Revision: 30
+
+Modified:
+   trunk/Posemuckel/build-dist/build.xml
+   trunk/Posemuckel/build-dist/posemuckel.in
+   trunk/Posemuckel/src/posemuckel/client/net/Client.java
+   trunk/Posemuckel/src/posemuckel/server/Server.java
+Log:
+Habe Versionsnummer f?\195?\188r das aktuelle Bugfix-Release angepasst.
+Die meisten weiteren offenen Bugs bed?\195?\188rfen gr?\195?\182?\195?\159eren ?\195?\132nderungen,
+so dass man hier einen Versionssprung bevorzugen sollte.
+
+Modified: trunk/Posemuckel/build-dist/build.xml
+===================================================================
+--- trunk/Posemuckel/build-dist/build.xml	2006-03-26 18:31:56 UTC (rev 29)
++++ trunk/Posemuckel/build-dist/build.xml	2006-04-02 10:20:30 UTC (rev 30)
+@@ -4,6 +4,7 @@
+     &lt;/description&gt;
+ &lt;!-- Globale Einstellungen --&gt;
+ &lt;property name=&quot;compiled&quot; location=&quot;../bin&quot;/&gt;
++&lt;property name=&quot;version&quot; value=&quot;0.4.1&quot;/&gt;
+ 
+ &lt;target name=&quot;linux&quot; depends=&quot;client-bin-linux-tgz,javadoc&quot;/&gt;
+ 	
+@@ -26,7 +27,7 @@
+ --&gt;
+ &lt;target name=&quot;client-linux&quot; description=&quot;generate the client distribution&quot; &gt;
+ 	&lt;!-- Erzeuge eine JAR-Datei f&#252;r den Server --&gt;
+-	&lt;jar jarfile=&quot;../dist/posemuckel-client-0.4.jar&quot;&gt;
++	&lt;jar jarfile=&quot;../dist/posemuckel-client-${version}.jar&quot;&gt;
+     	&lt;fileset dir=&quot;../bin&quot;&gt;
+     		&lt;exclude name=&quot;posemuckel/server/**&quot;/&gt;
+     		&lt;exclude name=&quot;**/*Test*&quot;/&gt;
+@@ -53,7 +54,7 @@
+ --&gt;
+ &lt;target name=&quot;client-win32&quot; description=&quot;generate the client distribution&quot; &gt;
+ 	&lt;!-- Erzeuge eine JAR-Datei f&#252;r den Server --&gt;
+-	&lt;jar jarfile=&quot;../dist/posemuckel-client-0.4.jar&quot;&gt;
++	&lt;jar jarfile=&quot;../dist/posemuckel-client-${version}.jar&quot;&gt;
+     	&lt;fileset dir=&quot;../bin&quot;&gt;
+     		&lt;exclude name=&quot;posemuckel/server/**&quot;/&gt;
+     		&lt;exclude name=&quot;**/*Test*&quot;/&gt;
+@@ -74,30 +75,30 @@
+ &lt;/target&gt;	
+ 	
+ &lt;target name=&quot;client-bin-win32-zip&quot; depends=&quot;client-win32&quot; description=&quot;generate the client distribution&quot; &gt;
+-		&lt;delete file=&quot;../dist/posemuckel-client-bin-win32-0.4.zip&quot;/&gt;
++		&lt;delete file=&quot;../dist/posemuckel-client-bin-win32-${version}.zip&quot;/&gt;
+ 		&lt;!-- Erzeuge eine Zip-Datei mit dem Client drin --&gt;
+-		&lt;zip destfile=&quot;../dist/posemuckel-client-bin-win32-0.4.zip&quot;&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;LICENSE.txt&quot; prefix=&quot;posemuckel-client-bin-0.4&quot;/&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;AUTHORS.txt&quot; prefix=&quot;posemuckel-client-bin-0.4&quot;/&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;INSTALL-win32.txt&quot; fullpath=&quot;posemuckel-client-bin-0.4/INSTALL.txt&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../dist&quot; includes=&quot;posemuckel-client-0.4.jar&quot; prefix=&quot;posemuckel-client-bin-0.4&quot;/&gt;
++		&lt;zip destfile=&quot;../dist/posemuckel-client-bin-win32-${version}.zip&quot;&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;LICENSE.txt&quot; prefix=&quot;posemuckel-client-bin-${version}&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;AUTHORS.txt&quot; prefix=&quot;posemuckel-client-bin-${version}&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;INSTALL-win32.txt&quot; fullpath=&quot;posemuckel-client-bin-${version}/INSTALL.txt&quot;/&gt;
++			&lt;zipfileset dir=&quot;../dist&quot; includes=&quot;posemuckel-client-${version}.jar&quot; prefix=&quot;posemuckel-client-bin-${version}&quot;/&gt;
+ 			&lt;!-- Das lib-Verzeichnis bef&#252;llen --&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;log4j-1.2.12.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;commons-codec-1.3.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.core.runtime_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.jface_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.swt_3.1.0.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.swt.win32.win32.x86_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;**/*.dll&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;..\lib\3RD-PARTY-LICENSES.txt&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;..\lib\Apache-License.txt&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;..\lib\Eclipse-Public-License.txt&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;..\lib\Common-Public-License.txt&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;log4j-1.2.12.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;commons-codec-1.3.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.core.runtime_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.jface_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.swt_3.1.0.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.swt.win32.win32.x86_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;**/*.dll&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;..\lib\3RD-PARTY-LICENSES.txt&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;..\lib\Apache-License.txt&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;..\lib\Eclipse-Public-License.txt&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;..\lib\Common-Public-License.txt&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
+ 			&lt;!-- Das doc-Verzeichnis bef&#252;llen --&gt;
+-			&lt;zipfileset dir=&quot;../doc/userdoc&quot; includes=&quot;**/*.htm&quot; prefix=&quot;posemuckel-client-bin-0.4/doc/userdoc&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../doc/userdoc/Images&quot; includes=&quot;**/*.jpg&quot; prefix=&quot;posemuckel-client-bin-0.4/doc/userdoc/Images&quot;/&gt;
++			&lt;zipfileset dir=&quot;../doc/userdoc&quot; includes=&quot;**/*.htm&quot; prefix=&quot;posemuckel-client-bin-${version}/doc/userdoc&quot;/&gt;
++			&lt;zipfileset dir=&quot;../doc/userdoc/Images&quot; includes=&quot;**/*.jpg&quot; prefix=&quot;posemuckel-client-bin-${version}/doc/userdoc/Images&quot;/&gt;
+ 		&lt;/zip&gt;
+-		&lt;delete file=&quot;../dist/posemuckel-client-0.4.jar&quot;/&gt;
++		&lt;delete file=&quot;../dist/posemuckel-client-${version}.jar&quot;/&gt;
+ &lt;/target&gt;
+ 	
+ 	
+@@ -119,72 +120,72 @@
+ 		&lt;!-- Erzeuge ein configure-Script --&gt;
+ 		&lt;exec dir=&quot;./&quot; executable=&quot;autoconf&quot;&gt;
+ 		&lt;/exec&gt;
+- 		&lt;delete file=&quot;../dist/posemuckel-client-bin-linux-0.4.tgz&quot;/&gt;
++ 		&lt;delete file=&quot;../dist/posemuckel-client-bin-linux-${version}.tgz&quot;/&gt;
+ 		&lt;!-- Erzeuge eine Tar-Gzip-Datei mit dem Client drin --&gt;
+-		&lt;tar destfile=&quot;../dist/posemuckel-client-bin-linux-0.4.tar&quot;&gt;
+-			&lt;tarfileset dir=&quot;.&quot; includes=&quot;LICENSE.txt&quot; prefix=&quot;posemuckel-client-bin-0.4&quot;/&gt;
+-			&lt;tarfileset dir=&quot;.&quot; includes=&quot;AUTHORS.txt&quot; prefix=&quot;posemuckel-client-bin-0.4&quot;/&gt;
+-			&lt;tarfileset dir=&quot;.&quot; includes=&quot;README.txt&quot; prefix=&quot;posemuckel-client-bin-0.4&quot;/&gt;
+-			&lt;tarfileset dir=&quot;.&quot; includes=&quot;posemuckel.in&quot; prefix=&quot;posemuckel-client-bin-0.4&quot;/&gt;
+-			&lt;tarfileset dir=&quot;.&quot; includes=&quot;configure&quot; mode=&quot;755&quot; prefix=&quot;posemuckel-client-bin-0.4&quot;/&gt;
+-			&lt;tarfileset dir=&quot;.&quot; includes=&quot;INSTALL-Linux.txt&quot; fullpath=&quot;posemuckel-client-bin-0.4/INSTALL.txt&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../dist&quot; includes=&quot;posemuckel-client-0.4.jar&quot; prefix=&quot;posemuckel-client-bin-0.4&quot;/&gt;
++		&lt;tar destfile=&quot;../dist/posemuckel-client-bin-linux-${version}.tar&quot;&gt;
++			&lt;tarfileset dir=&quot;.&quot; includes=&quot;LICENSE.txt&quot; prefix=&quot;posemuckel-client-bin-${version}&quot;/&gt;
++			&lt;tarfileset dir=&quot;.&quot; includes=&quot;AUTHORS.txt&quot; prefix=&quot;posemuckel-client-bin-${version}&quot;/&gt;
++			&lt;tarfileset dir=&quot;.&quot; includes=&quot;README.txt&quot; prefix=&quot;posemuckel-client-bin-${version}&quot;/&gt;
++			&lt;tarfileset dir=&quot;.&quot; includes=&quot;posemuckel.in&quot; prefix=&quot;posemuckel-client-bin-${version}&quot;/&gt;
++			&lt;tarfileset dir=&quot;.&quot; includes=&quot;configure&quot; mode=&quot;755&quot; prefix=&quot;posemuckel-client-bin-${version}&quot;/&gt;
++			&lt;tarfileset dir=&quot;.&quot; includes=&quot;INSTALL-Linux.txt&quot; fullpath=&quot;posemuckel-client-bin-${version}/INSTALL.txt&quot;/&gt;
++			&lt;tarfileset dir=&quot;../dist&quot; includes=&quot;posemuckel-client-${version}.jar&quot; prefix=&quot;posemuckel-client-bin-${version}&quot;/&gt;
+ 			&lt;!-- Das lib-Verzeichnis bef&#252;llen --&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;log4j-1.2.12.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;commons-codec-1.3.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.core.runtime_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.jface_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.swt_3.1.0.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.swt.gtk.linux.x86_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;**/*.so&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;3RD-PARTY-LICENSES.txt&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;Apache-License.txt&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;Eclipse-Public-License.txt&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;Common-Public-License.txt&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
++			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;log4j-1.2.12.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;commons-codec-1.3.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.core.runtime_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.jface_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.swt_3.1.0.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;org.eclipse.swt.gtk.linux.x86_3.1.1.jar&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;**/*.so&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;3RD-PARTY-LICENSES.txt&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;Apache-License.txt&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;Eclipse-Public-License.txt&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
++			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;Common-Public-License.txt&quot; prefix=&quot;posemuckel-client-bin-${version}/lib&quot;/&gt;
+ 			&lt;!-- Das doc-Verzeichnis bef&#252;llen --&gt;
+-			&lt;tarfileset dir=&quot;../doc/userdoc&quot; includes=&quot;**/*.htm&quot; prefix=&quot;posemuckel-client-bin-0.4/doc/userdoc&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../doc/userdoc/Images&quot; includes=&quot;**/*.jpg&quot; prefix=&quot;posemuckel-client-bin-0.4/doc/userdoc/Images&quot;/&gt;
++			&lt;tarfileset dir=&quot;../doc/userdoc&quot; includes=&quot;**/*.htm&quot; prefix=&quot;posemuckel-client-bin-${version}/doc/userdoc&quot;/&gt;
++			&lt;tarfileset dir=&quot;../doc/userdoc/Images&quot; includes=&quot;**/*.jpg&quot; prefix=&quot;posemuckel-client-bin-${version}/doc/userdoc/Images&quot;/&gt;
+ 		&lt;/tar&gt;
+-		&lt;gzip src=&quot;../dist/posemuckel-client-bin-linux-0.4.tar&quot; destfile=&quot;../dist/posemuckel-client-bin-linux-0.4.tgz&quot;/&gt;
+-	 	&lt;delete file=&quot;../dist/posemuckel-client-bin-linux-0.4.tar&quot;/&gt;
++		&lt;gzip src=&quot;../dist/posemuckel-client-bin-linux-${version}.tar&quot; destfile=&quot;../dist/posemuckel-client-bin-linux-${version}.tgz&quot;/&gt;
++	 	&lt;delete file=&quot;../dist/posemuckel-client-bin-linux-${version}.tar&quot;/&gt;
+ 		&lt;delete dir=&quot;autom4te.cache&quot;/&gt;
+ 		&lt;delete file=&quot;configure&quot;/&gt;
+-		&lt;delete file=&quot;../dist/posemuckel-client-0.4.jar&quot;/&gt;
++		&lt;delete file=&quot;../dist/posemuckel-client-${version}.jar&quot;/&gt;
+ &lt;/target&gt;	
+ 	
+ 
+ &lt;target name=&quot;sources-zip&quot; description=&quot;generate the source zip&quot; &gt;
+-			&lt;delete file=&quot;../dist/posemuckel-sources-0.4.zip&quot;/&gt;
++			&lt;delete file=&quot;../dist/posemuckel-sources-${version}.zip&quot;/&gt;
+ 			&lt;!-- Erzeuge eine Zip-Datei mit dem Client drin --&gt;
+-			&lt;zip destfile=&quot;../dist/posemuckel-sources-0.4.zip&quot;&gt;
+-				&lt;zipfileset dir=&quot;.&quot; includes=&quot;LICENSE.txt&quot; prefix=&quot;posemuckel-sources-0.4&quot;/&gt;
+-				&lt;zipfileset dir=&quot;.&quot; includes=&quot;AUTHORS.txt&quot; prefix=&quot;posemuckel-sources-0.4&quot;/&gt;
+-				&lt;zipfileset dir=&quot;.&quot; includes=&quot;README.txt&quot; prefix=&quot;posemuckel-sources-0.4&quot;/&gt;
++			&lt;zip destfile=&quot;../dist/posemuckel-sources-${version}.zip&quot;&gt;
++				&lt;zipfileset dir=&quot;.&quot; includes=&quot;LICENSE.txt&quot; prefix=&quot;posemuckel-sources-${version}&quot;/&gt;
++				&lt;zipfileset dir=&quot;.&quot; includes=&quot;AUTHORS.txt&quot; prefix=&quot;posemuckel-sources-${version}&quot;/&gt;
++				&lt;zipfileset dir=&quot;.&quot; includes=&quot;README.txt&quot; prefix=&quot;posemuckel-sources-${version}&quot;/&gt;
+ 				&lt;!-- Das src-Verzeichnis bef&#252;llen --&gt;
+-				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.java&quot; prefix=&quot;posemuckel-sources-0.4/src/posemuckel&quot;/&gt;
+-				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.jpg&quot; prefix=&quot;posemuckel-sources-0.4/src/posemuckel&quot;/&gt;
+-				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.gif&quot; prefix=&quot;posemuckel-sources-0.4/src/posemuckel&quot;/&gt;
+-				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.bmp&quot; prefix=&quot;posemuckel-sources-0.4/src/posemuckel&quot;/&gt;
+-				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.fatjar&quot; prefix=&quot;posemuckel-sources-0.4/src/posemuckel&quot;/&gt;
+-				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.properties&quot; prefix=&quot;posemuckel-sources-0.4/src/posemuckel&quot;/&gt;
+-				&lt;zipfileset dir=&quot;../src/lib&quot; includes=&quot;**/*.java&quot; prefix=&quot;posemuckel-sources-0.4/src/lib&quot;/&gt;
++				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.java&quot; prefix=&quot;posemuckel-sources-${version}/src/posemuckel&quot;/&gt;
++				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.jpg&quot; prefix=&quot;posemuckel-sources-${version}/src/posemuckel&quot;/&gt;
++				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.gif&quot; prefix=&quot;posemuckel-sources-${version}/src/posemuckel&quot;/&gt;
++				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.bmp&quot; prefix=&quot;posemuckel-sources-${version}/src/posemuckel&quot;/&gt;
++				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.fatjar&quot; prefix=&quot;posemuckel-sources-${version}/src/posemuckel&quot;/&gt;
++				&lt;zipfileset dir=&quot;../src/posemuckel&quot; includes=&quot;**/*.properties&quot; prefix=&quot;posemuckel-sources-${version}/src/posemuckel&quot;/&gt;
++				&lt;zipfileset dir=&quot;../src/lib&quot; includes=&quot;**/*.java&quot; prefix=&quot;posemuckel-sources-${version}/src/lib&quot;/&gt;
+ 				&lt;!-- Das server-Verzeichnis bef&#252;llen --&gt;
+-				&lt;zipfileset dir=&quot;../server&quot; includes=&quot;**/*.php&quot; prefix=&quot;posemuckel-sources-0.4/server&quot;/&gt;
+-				&lt;zipfileset dir=&quot;../server&quot; includes=&quot;**/*.tpl&quot; prefix=&quot;posemuckel-sources-0.4/server&quot;/&gt;
+-				&lt;zipfileset dir=&quot;../server&quot; includes=&quot;**/*.png&quot; prefix=&quot;posemuckel-sources-0.4/server&quot;/&gt;
+-				&lt;zipfileset dir=&quot;../server&quot; includes=&quot;**/*.gif&quot; prefix=&quot;posemuckel-sources-0.4/server&quot;/&gt;
+-				&lt;zipfileset dir=&quot;../server&quot; includes=&quot;**/*.jpg&quot; prefix=&quot;posemuckel-sources-0.4/server&quot;/&gt;
+-				&lt;zipfileset dir=&quot;../server/conf&quot; includes=&quot;**/*.*&quot; prefix=&quot;posemuckel-sources-0.4/server&quot;/&gt;
+-				&lt;zipfileset file=&quot;../server/www/lib/LICENSE.txt&quot; prefix=&quot;posemuckel-sources-0.4/server/www/lib&quot;/&gt;
+-				&lt;zipfileset file=&quot;../server/db.sql&quot; prefix=&quot;posemuckel-sources-0.4/server&quot;/&gt;
+-				&lt;zipfileset file=&quot;../server/db_test.sql&quot; prefix=&quot;posemuckel-sources-0.4/server&quot;/&gt;
++				&lt;zipfileset dir=&quot;../server&quot; includes=&quot;**/*.php&quot; prefix=&quot;posemuckel-sources-${version}/server&quot;/&gt;
++				&lt;zipfileset dir=&quot;../server&quot; includes=&quot;**/*.tpl&quot; prefix=&quot;posemuckel-sources-${version}/server&quot;/&gt;
++				&lt;zipfileset dir=&quot;../server&quot; includes=&quot;**/*.png&quot; prefix=&quot;posemuckel-sources-${version}/server&quot;/&gt;
++				&lt;zipfileset dir=&quot;../server&quot; includes=&quot;**/*.gif&quot; prefix=&quot;posemuckel-sources-${version}/server&quot;/&gt;
++				&lt;zipfileset dir=&quot;../server&quot; includes=&quot;**/*.jpg&quot; prefix=&quot;posemuckel-sources-${version}/server&quot;/&gt;
++				&lt;zipfileset dir=&quot;../server/conf&quot; includes=&quot;**/*.*&quot; prefix=&quot;posemuckel-sources-${version}/server&quot;/&gt;
++				&lt;zipfileset file=&quot;../server/www/lib/LICENSE.txt&quot; prefix=&quot;posemuckel-sources-${version}/server/www/lib&quot;/&gt;
++				&lt;zipfileset file=&quot;../server/db.sql&quot; prefix=&quot;posemuckel-sources-${version}/server&quot;/&gt;
++				&lt;zipfileset file=&quot;../server/db_test.sql&quot; prefix=&quot;posemuckel-sources-${version}/server&quot;/&gt;
+ 			&lt;/zip&gt;
+ &lt;/target&gt;	
+ 	
+ 	
+ &lt;target name=&quot;server&quot; description=&quot;generate the server jar&quot;&gt;
+ 		&lt;!-- Erzeuge eine JAR-Datei f&#252;r den Server --&gt;
+-		&lt;jar jarfile=&quot;../dist/posemuckel-server-0.4.jar&quot;&gt;
++		&lt;jar jarfile=&quot;../dist/posemuckel-server-${version}.jar&quot;&gt;
+ 	    	&lt;fileset dir=&quot;../bin&quot;&gt;
+ 	    		&lt;exclude name=&quot;posemuckel/client/**&quot;/&gt;
+ 	    		&lt;exclude name=&quot;**/*Test*&quot;/&gt;
+@@ -208,30 +209,30 @@
+ Daf&#252;r sorgt die Abh&#228;ngigkeit dieses Targets.
+ --&gt;
+ &lt;target name=&quot;server-bin-zip&quot; depends=&quot;server&quot; description=&quot;generate the server linux distribution&quot; &gt;
+- 		&lt;delete file=&quot;../dist/posemuckel-server-bin-0.4.zip&quot;/&gt;
++ 		&lt;delete file=&quot;../dist/posemuckel-server-bin-${version}.zip&quot;/&gt;
+ 		&lt;!-- Erzeuge eine Tar-Gzip-Datei mit dem Client drin --&gt;
+-		&lt;zip destfile=&quot;../dist/posemuckel-server-bin-0.4.zip&quot;&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;LICENSE.txt&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;AUTHORS.txt&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;README.txt&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;INSTALL-server.txt&quot; fullpath=&quot;posemuckel-server-bin-0.4/INSTALL.txt&quot;/&gt;
+-			&lt;zipfileset dir=&quot;.&quot; includes=&quot;INSTALL-de-server.txt&quot; fullpath=&quot;posemuckel-server-bin-0.4/INSTALL-de.txt&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../dist&quot; includes=&quot;posemuckel-server-0.4.jar&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
+-			&lt;zipfileset file=&quot;../src/posemuckel/server/posemuckel_server.cfg&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
++		&lt;zip destfile=&quot;../dist/posemuckel-server-bin-${version}.zip&quot;&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;LICENSE.txt&quot; prefix=&quot;posemuckel-server-bin-${version}&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;AUTHORS.txt&quot; prefix=&quot;posemuckel-server-bin-${version}&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;README.txt&quot; prefix=&quot;posemuckel-server-bin-${version}&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;INSTALL-server.txt&quot; fullpath=&quot;posemuckel-server-bin-${version}/INSTALL.txt&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;INSTALL-de-server.txt&quot; fullpath=&quot;posemuckel-server-bin-${version}/INSTALL-de.txt&quot;/&gt;
++			&lt;zipfileset dir=&quot;../dist&quot; includes=&quot;posemuckel-server-${version}.jar&quot; prefix=&quot;posemuckel-server-bin-${version}&quot;/&gt;
++			&lt;zipfileset file=&quot;../src/posemuckel/server/posemuckel_server.cfg&quot; prefix=&quot;posemuckel-server-bin-${version}&quot;/&gt;
+ 			&lt;!-- Das lib-Verzeichnis bef&#252;llen --&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;log4j-1.2.12.jar&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;java-getopt-1.0.12.jar&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;mysql-connector-java-3.1.11-bin.jar&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;				
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;3RD-PARTY-LICENSES.txt&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;Apache-License.txt&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;Common-Public-License.txt&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;log4j-1.2.12.jar&quot; prefix=&quot;posemuckel-server-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;java-getopt-1.0.12.jar&quot; prefix=&quot;posemuckel-server-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;mysql-connector-java-3.1.11-bin.jar&quot; prefix=&quot;posemuckel-server-bin-${version}/lib&quot;/&gt;				
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;3RD-PARTY-LICENSES.txt&quot; prefix=&quot;posemuckel-server-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;Apache-License.txt&quot; prefix=&quot;posemuckel-server-bin-${version}/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;Common-Public-License.txt&quot; prefix=&quot;posemuckel-server-bin-${version}/lib&quot;/&gt;
+ 			&lt;!-- Das doc-Verzeichnis bef&#252;llen --&gt;
+-			&lt;zipfileset dir=&quot;../doc&quot; includes=&quot;posemuckel_sag_de.pdf&quot; prefix=&quot;posemuckel-server-bin-0.4/doc&quot;/&gt;
+-			&lt;zipfileset dir=&quot;../doc/userdoc&quot; prefix=&quot;posemuckel-server-bin-0.4/doc/userdoc&quot;/&gt;
++			&lt;zipfileset dir=&quot;../doc&quot; includes=&quot;posemuckel_sag_de.pdf&quot; prefix=&quot;posemuckel-server-bin-${version}/doc&quot;/&gt;
++			&lt;zipfileset dir=&quot;../doc/userdoc&quot; prefix=&quot;posemuckel-server-bin-${version}/doc/userdoc&quot;/&gt;
+ 			&lt;!-- Das server-Verzeichnis bef&#252;llen --&gt;
+-			&lt;zipfileset dir=&quot;../server&quot; prefix=&quot;posemuckel-server-bin-0.4/server&quot;/&gt;
++			&lt;zipfileset dir=&quot;../server&quot; prefix=&quot;posemuckel-server-bin-${version}/server&quot;/&gt;
+ 		&lt;/zip&gt;
+-		&lt;delete file=&quot;../dist/posemuckel-server-0.4.jar&quot;/&gt;
++		&lt;delete file=&quot;../dist/posemuckel-server-${version}.jar&quot;/&gt;
+ &lt;/target&gt;	
+ 
+ 	
+
+Modified: trunk/Posemuckel/build-dist/posemuckel.in
+===================================================================
+--- trunk/Posemuckel/build-dist/posemuckel.in	2006-03-26 18:31:56 UTC (rev 29)
++++ trunk/Posemuckel/build-dist/posemuckel.in	2006-04-02 10:20:30 UTC (rev 30)
+@@ -11,5 +11,5 @@
+ 
+ 
+ cd $INSTALL_DIR
+-$JAVA_BINARY -Djava.library.path=./lib -jar posemuckel-client-0.4.jar
++$JAVA_BINARY -Djava.library.path=./lib -jar posemuckel-client-0.4.1.jar
+ cd $BACK_HERE
+\ No newline at end of file
+
+Modified: trunk/Posemuckel/src/posemuckel/client/net/Client.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/net/Client.java	2006-03-26 18:31:56 UTC (rev 29)
++++ trunk/Posemuckel/src/posemuckel/client/net/Client.java	2006-04-02 10:20:30 UTC (rev 30)
+@@ -37,7 +37,7 @@
+ 	/**
+ 	 * Version des Meilensteins 
+ 	 */
+-	protected final static String VERSION = &quot;0.4&quot;;
++	protected final static String VERSION = &quot;0.4.1&quot;;
+ 	
+ 	/*
+ 	 * Verbindung zum Server
+
+Modified: trunk/Posemuckel/src/posemuckel/server/Server.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/server/Server.java	2006-03-26 18:31:56 UTC (rev 29)
++++ trunk/Posemuckel/src/posemuckel/server/Server.java	2006-04-02 10:20:30 UTC (rev 30)
+@@ -36,7 +36,7 @@
+ 	/**
+ 	 * Version des Servers
+ 	 */
+-    public static final String VERSION = &quot;0.1&quot;;
++    public static final String VERSION = &quot;0.4.1&quot;;
+   
+     /**
+      * Gibt an, ob der Server beendet ist
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000005.html">[Posemuckel-svn] r31 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#4">[ date ]</a>
+              <a href="thread.html#4">[ thread ]</a>
+              <a href="subject.html#4">[ subject ]</a>
+              <a href="author.html#4">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/posemuckel-svn">More information about the Posemuckel-svn
+mailing list</a><br>
+</body></html>

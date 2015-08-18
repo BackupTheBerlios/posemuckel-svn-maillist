@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Posemuckel-svn] r35 - trunk/Posemuckel/src/posemuckel/client/gui
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/posemuckel-svn/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r35%20-%20trunk/Posemuckel/src/posemuckel/client/gui&In-Reply-To=%3C200604091704.k39H4JGQ020383%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000008.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Posemuckel-svn] r35 - trunk/Posemuckel/src/posemuckel/client/gui</H1>
+    <B>tabu at berlios.de</B> 
+    <A HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r35%20-%20trunk/Posemuckel/src/posemuckel/client/gui&In-Reply-To=%3C200604091704.k39H4JGQ020383%40sheep.berlios.de%3E"
+       TITLE="[Posemuckel-svn] r35 - trunk/Posemuckel/src/posemuckel/client/gui">tabu at berlios.de
+       </A><BR>
+    <I>Sun Apr  9 19:04:19 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000008.html">[Posemuckel-svn] r34 - in trunk/Posemuckel/src/posemuckel/client/model: . event
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#9">[ date ]</a>
+              <a href="thread.html#9">[ thread ]</a>
+              <a href="subject.html#9">[ subject ]</a>
+              <a href="author.html#9">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: tabu
+Date: 2006-04-09 19:04:09 +0200 (Sun, 09 Apr 2006)
+New Revision: 35
+
+Modified:
+   trunk/Posemuckel/src/posemuckel/client/gui/NotificationDialog.java
+Log:
+habe die Benachrichtigungsmethoden der Listener der 
+Klasse Project mit dem Pr?\195?\164fix fire ausgestattet.
+
+tanja
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/NotificationDialog.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/NotificationDialog.java	2006-04-09 17:02:14 UTC (rev 34)
++++ trunk/Posemuckel/src/posemuckel/client/gui/NotificationDialog.java	2006-04-09 17:04:09 UTC (rev 35)
+@@ -81,7 +81,7 @@
+ 			public void mouseDoubleClick(MouseEvent arg0) {}
+ 			public void mouseUp(MouseEvent arg0) {
+ 				Project proj = Model.getModel().getOpenProject();
+-				proj.newURL(url);
++				proj.fireNewURL(url);
+ 			}
+ 		});
+ 		
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000008.html">[Posemuckel-svn] r34 - in trunk/Posemuckel/src/posemuckel/client/model: . event
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#9">[ date ]</a>
+              <a href="thread.html#9">[ thread ]</a>
+              <a href="subject.html#9">[ subject ]</a>
+              <a href="author.html#9">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/posemuckel-svn">More information about the Posemuckel-svn
+mailing list</a><br>
+</body></html>

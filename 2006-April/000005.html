@@ -1,0 +1,923 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Posemuckel-svn] r31 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/posemuckel-svn/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r31%20-%20trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer&In-Reply-To=%3C200604021555.k32FtIYR000987%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000004.html">
+   <LINK REL="Next"  HREF="000006.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Posemuckel-svn] r31 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer</H1>
+    <B>tabu at berlios.de</B> 
+    <A HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r31%20-%20trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer&In-Reply-To=%3C200604021555.k32FtIYR000987%40sheep.berlios.de%3E"
+       TITLE="[Posemuckel-svn] r31 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer">tabu at berlios.de
+       </A><BR>
+    <I>Sun Apr  2 17:55:18 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000004.html">[Posemuckel-svn] r30 - in trunk/Posemuckel: build-dist src/posemuckel/client/net src/posemuckel/server
+</A></li>
+        <LI>Next message: <A HREF="000006.html">[Posemuckel-svn] r32 - trunk/Posemuckel/doc/userdoc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#5">[ date ]</a>
+              <a href="thread.html#5">[ thread ]</a>
+              <a href="subject.html#5">[ subject ]</a>
+              <a href="author.html#5">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: tabu
+Date: 2006-04-02 17:54:52 +0200 (Sun, 02 Apr 2006)
+New Revision: 31
+
+Added:
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultTree.java
+Modified:
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultsViewerLabelProvider.java
+Log:
+Habe die GUI f?\195?\188r das Foldersystem aus dem ResultDialog
+herausgezogen und in eine eigene Klasse verpackt. Damit ist
+der Weg frei, den Baum auch an anderer Stelle in der GUI einzubauen.
+
+Als Label f?\195?\188r die URLs wird nur noch der Titel verwendet. Ein Tooltip
+mit der URL existiert allerdings noch nicht.
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java	2006-04-02 10:20:30 UTC (rev 30)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java	2006-04-02 15:54:52 UTC (rev 31)
+@@ -35,11 +35,13 @@
+ import posemuckel.common.GetText;
+ 
+ /**
++ * In einem RatingTable werden die einzelnen Bewertungen der Anwender zu einer 
++ * Webseite tabellarisch dargestellt. F&#252;r jeden Anwender wird aufgef&#252;hrt, ob Notizen
++ * zu dieser Webseite vorhanden sind. 
+  * 
+  * @author Posemuckel Team
+  *
+  */
+-
+ public class RatingTable extends Composite {
+ 	
+ 	private Table table;
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java	2006-04-02 10:20:30 UTC (rev 30)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java	2006-04-02 15:54:52 UTC (rev 31)
+@@ -1,63 +1,47 @@
+ package posemuckel.client.gui.resultsviewer;
+ 
+-import org.eclipse.jface.action.MenuManager;
+ import org.eclipse.jface.dialogs.Dialog;
+ import org.eclipse.jface.dialogs.IDialogConstants;
+ import org.eclipse.jface.viewers.ISelectionChangedListener;
+ import org.eclipse.jface.viewers.IStructuredSelection;
+ import org.eclipse.jface.viewers.SelectionChangedEvent;
+-import org.eclipse.jface.viewers.TreeViewer;
+ import org.eclipse.swt.SWT;
+ import org.eclipse.swt.custom.SashForm;
+-import org.eclipse.swt.dnd.DND;
+-import org.eclipse.swt.dnd.DragSourceEvent;
+-import org.eclipse.swt.dnd.DragSourceListener;
+-import org.eclipse.swt.dnd.DropTargetAdapter;
+-import org.eclipse.swt.dnd.DropTargetEvent;
+-import org.eclipse.swt.dnd.TextTransfer;
+-import org.eclipse.swt.dnd.Transfer;
+-import org.eclipse.swt.graphics.Point;
+-import org.eclipse.swt.graphics.Rectangle;
+ import org.eclipse.swt.layout.FillLayout;
+ import org.eclipse.swt.layout.GridData;
+ import org.eclipse.swt.layout.GridLayout;
+ import org.eclipse.swt.widgets.Composite;
+ import org.eclipse.swt.widgets.Control;
+-import org.eclipse.swt.widgets.Event;
+-import org.eclipse.swt.widgets.Listener;
+-import org.eclipse.swt.widgets.Menu;
+ import org.eclipse.swt.widgets.Shell;
+-import org.eclipse.swt.widgets.Tree;
+-import org.eclipse.swt.widgets.TreeItem;
+ 
+-import posemuckel.client.gui.Colors;
+ import posemuckel.client.gui.ImageManagment;
+ import posemuckel.client.gui.MyLayoutFactory;
+-import posemuckel.client.gui.actions.DeleteFolderAction;
+-import posemuckel.client.gui.actions.NewFolderAction;
+-import posemuckel.client.gui.browser.TreeIcons;
+ import posemuckel.client.model.Folder;
+ import posemuckel.client.model.Model;
+ import posemuckel.client.model.Root;
+ import posemuckel.client.model.Webpage;
+ import posemuckel.common.GetText;
+ 
++/**
++ * Baut das Ergebnisfenster zusammen und erm&#246;glicht es dem Anwender, 
++ * die einzelnen Webseiten aus der Ergebnistabelle per Drag and Drop
++ * in das Foldersystem einzusortieren.
++ * 
++ * @author Posemuckel Team
++ *
++ */
+ public class ResultDialog extends Dialog {
+ 
+-	private TreeViewer resultsViewer;
+-	private ResultsViewerLabelProvider labelProvider;
+-	public static final int RATING = 100;
+-	private Model model;
++	private ResultTree resultTree;
+ 	private RatingTable singleRating;
+ 	
+ 	public ResultDialog(Shell shell) {
+ 		super(shell);
+-		model = Model.getModel();
+ 	}
+ 
+ 	protected Control createDialogArea(Composite parent)
+ 	{
+-		Colors.initColors();
++		//Colors.initColors();
+ 		GridLayout layout = new GridLayout();
+ 		Composite comp = (Composite)super.createDialogArea(parent);
+ 		layout.numColumns = 1;
+@@ -72,38 +56,18 @@
+ 		layoutData.minimumHeight=500;
+ 		layoutData.minimumWidth=800;
+ 		sash.setLayoutData(layoutData);
++		//die Komponenten einsetzen
+ 		singleRating = addTable(sash);
+-		resultsViewer = new TreeViewer(sash);
+-		resultsViewer.setContentProvider(new ResultsViewerContentProvider());
+-		//labelProvider = new ResultsViewerLabelProvider();
+-		labelProvider = new ResultsViewerLabelProvider(TreeIcons.getIcons());
+-		resultsViewer.setLabelProvider(labelProvider);
++		resultTree = new ResultTree(sash);
+ 		addListeners();
+-		resultsViewer.setUseHashlookup(true);
+-		
+-		// layout the tree viewer
+-		layoutData = new GridData();
+-		layoutData.minimumWidth = 300;
+-		layoutData.minimumHeight = 300;		
+-		resultsViewer.getControl().setLayoutData(layoutData);
+-		
++		resultTree.setInput(getInitialInput());
+ 		// Create menu, toolbars, filters, sorters.
+ 		//createFiltersAndSorters();
+ 		//createActions();
+ 		//createMenus();
+ 		//createToolbar();
+-		createContextMenu(resultsViewer);
+-		//addListeners(); //  funktioniert irgendwie nicht richtig, daher erst mal deaktiviert	
+-		enableDND();
++		resultTree.enableDND();
+ 		
+-		resultsViewer.setInput(getInitialInput());
+-		resultsViewer.expandAll();
+-		
+-		// get data from DB
+-
+-		//setStatus(GetText.gettext(&quot;STATUSLINE&quot;));
+-		
+-		//getShell().setText(&quot;Results for ...&quot;);
+ 		getShell().setText(GetText.macroreplace(GetText.gettext(&quot;PROJECT_RESULTS&quot;),&quot;PROJ&quot;,Model.getModel().getOpenProject().getTopic()));
+ 		getShell().setImage(ImageManagment.getRegistry().get(ImageManagment.SHELL_ICON));
+ 		return comp;
+@@ -121,6 +85,7 @@
+ 			Composite tvComp = new Composite(child, SWT.NONE);
+ 			tvComp.setLayout(new FillLayout());	
+ 			tvComp.setLayoutData(getGridData());
++			Model model = Model.getModel();
+ 			return new WebtraceTable(tvComp, 
+ 					model.getOpenProject().getWebtrace(), model).getRatingTable();
+ 			//die Instanz von RatingTable abfragen und zur&#252;ckgeben			
+@@ -133,223 +98,30 @@
+ 			return gridData;
+ 		}
+ 
+-	protected void addListeners() {
+-		resultsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+-			//TODO an die Kommentare anschliessen
+-			public void selectionChanged(SelectionChangedEvent event) {
+-				// if the selection is empty do nothing
+-				if(event.getSelection().isEmpty()) {
+-					return;
+-				}
+-				if(event.getSelection() instanceof IStructuredSelection) {
+-					IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+-					Object selected = (Root) selection.getFirstElement();
+-					if(selected instanceof Webpage) {
+-						singleRating.setInput((Webpage)selected);
++		protected void addListeners() {
++			resultTree.addSelectionChangedListener(new ISelectionChangedListener() {
++				//TODO an die Kommentare anschliessen
++				public void selectionChanged(SelectionChangedEvent event) {
++					// if the selection is empty do nothing
++					if(event.getSelection().isEmpty()) {
++						return;
+ 					}
+-					//text_selection.setText(labelProvider.getText(selected, RATING));
+-				}
+-			}
+-		});
+-	}
+-
+-		
+-	protected void enableDND() 
+-	{
+-		int operations = DND.DROP_MOVE | DND.DROP_DEFAULT ;
+-		ResultTransferType folderType = new ResultTransferType(ResultTransferType.FOLDER_TYPE);
+-		ResultTransferType urlType = new ResultTransferType(ResultTransferType.URL_TYPE);
+-		//Text wird zum Herausziehen erlaubt
+-		//die Reihenfolge ist wichtig! 
+-		Transfer[] types = new Transfer[] {folderType, urlType, TextTransfer.getInstance()};
+-		final Tree tree = resultsViewer.getTree();
+-		final Object[] dragItem = new Object[1];
+-		final TreeItem[] dragSourceItem = new TreeItem[1];
+-
+-		resultsViewer.addDragSupport(operations, types, new DragSourceListener() {
+-			public void dragStart(DragSourceEvent event) {
+-				//TODO das brauchen wir doch nicht, da sowieso nur Webpage und Folder 
+-				//enthalten sein k&#246;nnen
+-				//dragItem hat ist eine Instanz von DragSource
+-				dragItem[0] = event.getSource();
+-				/*if (dragItem[0] instanceof Webpage) {
+-//					event.doit = true;
+-//				} else if(dragItem[0] instanceof Folder) {
+-//					//Folder k&#246;nnen innerhalb des Baumes verschoben werden
+-//					event.doit = true;
+-//				} else {
+-//					System.err.println(&quot;unknown type &quot; + dragItem[0].getClass());
+-//					event.doit = false;
+-//				}				
+-				/*TreeItem[] selection = tree.getSelection();
+-				if (selection.length &gt; 0) //&amp;&amp; selection[0].getItemCount() == 0) 
+-				{
+-					event.doit = true;
+-					dragSourceItem[0] = selection[0];
+-				}*/ 
+-			};
+-			public void dragSetData (DragSourceEvent event) {
+-				//unser eingener TransferType wird bevorzugt behandelt
+-				if(ResultTransferType.supports(event.dataType)) {
+-					IStructuredSelection selection = (IStructuredSelection)resultsViewer.getSelection();
+-					Object selected = selection.getFirstElement();
+-					if(selected == null) return;
+-					if(selected instanceof Folder) {
+-						event.data = new String[] {ResultTransferType.FOLDER_TYPE, 
+-								((Folder)selected).getID()};
+-					} else {//instanceof Webpage!
+-						event.data = new String[] {ResultTransferType.URL_TYPE,
+-								((Webpage)selected).getURL()};
+-					}
+-				} else if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
+-					event.data = resultsViewer.getTree().getSelection()[0].getText();
+-				}
+-
+-			}
+-			public void dragFinished(DragSourceEvent event) {
+-				if (event.detail == DND.DROP_MOVE) {
+-					//die Bearbeitung wird vom Ziel vorgenommen
+-					
+-					//dragSourceItem[0].dispose();
+-					dragSourceItem[0] = null;
+-
+-				}
+-			}
+-		});
+-		
+-		resultsViewer.addDropSupport(operations, types, new DropTargetAdapter() {
+-			public void dragOver(DropTargetEvent event) {
+-				event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
+-				if (event.item != null) {
+-					TreeItem item = (TreeItem)event.item;
+-					Point pt = getShell().getDisplay().map(null, tree, event.x, event.y);
+-					Rectangle bounds = item.getBounds();
+-					if (pt.y &lt; bounds.y + bounds.height/3) {
+-						event.feedback |= DND.FEEDBACK_INSERT_BEFORE;
+-					} else if (pt.y &gt; bounds.y + 2*bounds.height/3) {
+-						event.feedback |= DND.FEEDBACK_INSERT_AFTER;
+-					} else {
+-						event.feedback |= DND.FEEDBACK_SELECT;
+-					}
+-				}
+-			}
+-			public void drop(DropTargetEvent event) {
+-				if (event.data == null) {
+-					event.detail = DND.DROP_NONE;
+-					return;
+-				}
+-				String parentFolderID = &quot;&quot;;
+-				//String text = (String)event.data;
+-				if (event.item == null) {
+-					//TreeItem item = new TreeItem(tree, SWT.NONE);
+-					//item.setText(text);
+-					//die ParentFolderID nicht &#228;ndern
+-				} else {
+-					// get item the cursor is hovering over
+-					TreeItem item = (TreeItem)event.item;
+-					Folder currentFolder;
+-					if(item.getData() instanceof Folder) {
+-						currentFolder = (Folder)item.getData();
+-					} else {//das Item ist eine Webpage
+-						currentFolder = (Folder)item.getParentItem().getData();
+-					}
+-					 
+-					// get cursor position
+-					Point pt = getShell().getDisplay().map(null, tree, event.x, event.y);
+-					// get item bounds
+-					Rectangle bounds = item.getBounds();
+-					// get parent of item
+-					//ist immer ein Folder, falls existent
+-					TreeItem parent = item.getParentItem();
+-					// wenn item, auf das cursor zeigt, einen parent hat:
+-					if (parent != null) {
+-						// get all items in parent
+-						//TreeItem[] items = parent.getItems();
+-						Folder parentFolder = (Folder) parent.getData();
+-						/*
+-						 * es kann erst eingef&#252;gt werden, wenn der Server zugestimmt hat!
+-						 * deshalb scheint der Index nicht gebraucht zu werden
+-						 */
+-//						int index = 0;
+-//						// get item index
+-//						for (int i = 0; i &lt; items.length; i++) {
+-//							if (items[i] == item) {
+-//								index = i;
+-//								break;
+-//							}
+-//						}
+-//						// if in upper third of item insert source before item
+-						if (pt.y &lt; bounds.y + bounds.height/3) {
+-//							TreeItem newItem = new TreeItem(parent, SWT.NONE, index);
+-//							newItem.setText(text);
+-							parentFolderID = parentFolder.getID();
+-							// if in lower third of item insert source after item
+-						} else if (pt.y &gt; bounds.y + 2*bounds.height/3) {
+-//							TreeItem newItem = new TreeItem(parent, SWT.NONE, index+1);
+-//							newItem.setText(text);
+-							parentFolderID = parentFolder.getID();
+-							// if on item create subitem of item
+-						} else {
+-//							TreeItem newItem = new TreeItem(item, SWT.NONE);
+-//							newItem.setText(text);
+-							parentFolderID = currentFolder.getID();
++					if(event.getSelection() instanceof IStructuredSelection) {
++						IStructuredSelection selection = (IStructuredSelection)event.getSelection();
++						Object selected = (Root) selection.getFirstElement();
++						if(selected instanceof Webpage) {
++							singleRating.setInput((Webpage)selected);
+ 						}
+-						
+-						// wenn item, auf das cursor zeigt, kein parent hat (in root liegt):
+-					} else {
+-						/*
+-						 * erst den Server fragen
+-						 *
+-						TreeItem[] items = tree.getItems();
+-						int index = 0;
+-						for (int i = 0; i &lt; items.length; i++) {
+-							if (items[i] == item) {
+-								index = i;
+-								break;
+-							}
+-						}
+-						*/
+-						if (pt.y &lt; bounds.y + bounds.height/3) {
+-//							TreeItem newItem = new TreeItem(tree, SWT.NONE, index);
+-//							newItem.setText(text);
+-						} else if (pt.y &gt; bounds.y + 2*bounds.height/3) {
+-//							TreeItem newItem = new TreeItem(tree, SWT.NONE, index+1);
+-//							newItem.setText(text);
+-						} else {
+-//							TreeItem newItem = new TreeItem(item, SWT.NONE);
+-//							newItem.setText(text);
+-							parentFolderID = currentFolder.getID();		
+-						}
+-						
+-					}				
+-				}
+-				//die Nachrichten an den Server senden
+-				if(ResultTransferType.supports(event.currentDataType)) {
+-					String[] data = (String[]) event.data;
+-					String type = data[0];
+-					if(type.equals(ResultTransferType.FOLDER_TYPE)) {
+-						for (int i = 1; i &lt; data.length; i++) {
+-							model.getOpenProject().getFolderTree().requestChangeParent(data[i] , parentFolderID);
+-						}
+-					} else if(type.equals(ResultTransferType.URL_TYPE)) {
+-						//die Wurzel sollte keine URLs erhalten
+-						String rootID = model.getOpenProject().getFolderTree().getFolderRoot().getID();
+-						if(rootID.equals(parentFolderID) || parentFolderID == null
+-								|| parentFolderID.equals(&quot;&quot;)) return;
+-						for (int i = 1; i &lt; data.length; i++) {
+-							model.getOpenProject().getFolderTree()
+-								.requestChangeParentForURL(parentFolderID, data[i]);
+-						}
++						//text_selection.setText(labelProvider.getText(selected, RATING));
+ 					}
+ 				}
+-			}
+-		});
+-	}
++			});
++		}
+ 	
+ 	
+ 	public Folder getInitialInput() 
+ 	{
+-		return model.getOpenProject().getFolderTree().getFolderRoot();
++		return Model.getModel().getOpenProject().getFolderTree().getFolderRoot();
+ 	}
+ 	
+ 	
+@@ -369,56 +141,4 @@
+ 		}
+ 	}
+ 	
+-	/**
+-	 * Erstellt einen Listener, der auf Klicks mit der rechten Maustaste reagiert.
+-	 * Es wird ein Kontextmen&#252;, welches sich nach der Selektion richtet, erstellt.
+-	 * 
+-	 * @param treeViewer, dessen Control das Kontextmen&#252; erhalten soll
+-	 */
+-	private void createContextMenu(final TreeViewer treeViewer) {
+-		treeViewer.getTree().addListener(SWT.MouseDown, new Listener() {
+-
+-			public void handleEvent(Event event) {
+-				Point point = new Point(event.x, event.y);
+-				if (treeViewer.getTree().getMenu()!=null) {
+-					treeViewer.getTree().getMenu().dispose();
+-				}
+-				TreeItem item= treeViewer.getTree().getItem(point);
+-				if (event.button==3) {
+-					addContextMenu(item);
+-				}
+-			}
+-			
+-		});
+-	}
+-	
+-	/**
+-	 * Erstellt ein Kontextmen&#252;, dessen Inhalt sich nach dem angegebenen TreeItem richtet.
+-	 * @param item bestimmt, was f&#252;r Optionen der Anwender hat
+-	 */
+-	private void addContextMenu(TreeItem item) {
+-		MenuManager menu = new MenuManager();
+-		//die Actions erstellen und einf&#252;gen
+-		
+-		//wurde ein Folder selektiert?
+-		Folder selected = null;//wenn der Wert null bleibt, dann wurde kein Ordner selektiert
+-		if(item != null &amp;&amp; item.getData() != null &amp;&amp; item.getData() instanceof Folder) {
+-			selected = (Folder)item.getData();
+-		}		
+-		//kann ein neuer Unterordner erstellt werden?
+-		if(selected != null) {//ja
+-			menu.add(new NewFolderAction(selected, GetText.gettext(&quot;NEW_SUBFOLDER&quot;)));
+-		} else {//nein
+-			menu.add(new NewFolderAction(GetText.gettext(&quot;NEW_FOLDER&quot;)));
+-		}
+-
+-		//kann der selektierte Folder gel&#246;scht werden?
+-		if(selected != null &amp;&amp; (!selected.hasChildren())) {
+-			menu.add(new DeleteFolderAction(selected));
+-		}
+-		Menu contextMenu = menu.createContextMenu(resultsViewer.getTree());
+-		//resultsViewer.getTree().setMenu(contextMenu);
+-		contextMenu.setVisible(true);
+-	}
+-
+ }
+
+Added: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultTree.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultTree.java	2006-04-02 10:20:30 UTC (rev 30)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultTree.java	2006-04-02 15:54:52 UTC (rev 31)
+@@ -0,0 +1,352 @@
++/**
++ * 
++ */
++package posemuckel.client.gui.resultsviewer;
++
++import org.eclipse.jface.action.MenuManager;
++import org.eclipse.jface.viewers.ISelectionChangedListener;
++import org.eclipse.jface.viewers.IStructuredSelection;
++import org.eclipse.jface.viewers.TreeViewer;
++import org.eclipse.swt.SWT;
++import org.eclipse.swt.dnd.DND;
++import org.eclipse.swt.dnd.DragSourceEvent;
++import org.eclipse.swt.dnd.DragSourceListener;
++import org.eclipse.swt.dnd.DropTargetAdapter;
++import org.eclipse.swt.dnd.DropTargetEvent;
++import org.eclipse.swt.dnd.TextTransfer;
++import org.eclipse.swt.dnd.Transfer;
++import org.eclipse.swt.graphics.Point;
++import org.eclipse.swt.graphics.Rectangle;
++import org.eclipse.swt.layout.GridData;
++import org.eclipse.swt.widgets.Composite;
++import org.eclipse.swt.widgets.Display;
++import org.eclipse.swt.widgets.Event;
++import org.eclipse.swt.widgets.Listener;
++import org.eclipse.swt.widgets.Menu;
++import org.eclipse.swt.widgets.Tree;
++import org.eclipse.swt.widgets.TreeItem;
++
++import posemuckel.client.gui.actions.DeleteFolderAction;
++import posemuckel.client.gui.actions.NewFolderAction;
++import posemuckel.client.gui.browser.TreeIcons;
++import posemuckel.client.model.Folder;
++import posemuckel.client.model.Model;
++import posemuckel.client.model.Webpage;
++import posemuckel.common.GetText;
++
++/**
++ * Der ResultTree stellt die Baumstruktur 
++ * der einsortierten Webseiten dar. Innerhalb des Baumes
++ * k&#246;nnen die Webseiten per Drag and Drop verschoben werden.
++ * 
++ * @author Posemuckel Team
++ *
++ */
++public class ResultTree {
++	//durch Refactoring aus der Klasse ResultDialog herausgezogen
++	
++	private TreeViewer resultsViewer;
++	private ResultsViewerLabelProvider labelProvider;
++	private Model model;
++	
++	
++	/**
++	 * Erstellt eine GUI f&#252;r das Foldersystem.
++	 * @param parent in dem der ResultTree dargestellt werden soll
++	 */
++	public ResultTree(Composite parent) {
++		model = Model.getModel();
++		buildAndLayoutTree(parent);
++	}
++	
++	/**
++	 * Setzt den Folder, der den Einstieg in das Foldersystem repr&#228;sentiert.
++	 * 
++	 * @param root Wurzelfolder
++	 */
++	public void setInput(Folder root) {
++		resultsViewer.setInput(root);
++		resultsViewer.expandAll();
++	}
++	
++	/**
++	 * Setzt den ResultTree zusammen. F&#252;r den Baum wird Hashlookup verwendet. 
++	 * Das Kontextmen&#252; des Baumes bezieht ein, welches Element selektiert wurde.
++	 * @param parent
++	 */
++	private void buildAndLayoutTree(Composite parent) {
++		resultsViewer = new TreeViewer(parent);
++		resultsViewer.setContentProvider(new ResultsViewerContentProvider());
++		//labelProvider = new ResultsViewerLabelProvider();
++		labelProvider = new ResultsViewerLabelProvider(TreeIcons.getIcons());
++		resultsViewer.setLabelProvider(labelProvider);
++		resultsViewer.setUseHashlookup(true);
++		
++		// layout the tree viewer
++		GridData layoutData = new GridData();
++		layoutData.minimumWidth = 300;
++		layoutData.minimumHeight = 300;		
++		resultsViewer.getControl().setLayoutData(layoutData);
++		createContextMenu(resultsViewer);
++	}
++	
++	/**
++	 * Erstellt einen Listener, der auf Klicks mit der rechten Maustaste reagiert.
++	 * Es wird ein Kontextmen&#252;, welches sich nach der Selektion richtet, erstellt.
++	 * 
++	 * @param treeViewer, dessen Control das Kontextmen&#252; erhalten soll
++	 */
++	private void createContextMenu(final TreeViewer treeViewer) {
++		treeViewer.getTree().addListener(SWT.MouseDown, new Listener() {
++
++			public void handleEvent(Event event) {
++				Point point = new Point(event.x, event.y);
++				if (treeViewer.getTree().getMenu()!=null) {
++					treeViewer.getTree().getMenu().dispose();
++				}
++				TreeItem item= treeViewer.getTree().getItem(point);
++				if (event.button==3) {
++					addContextMenu(item);
++				}
++			}
++			
++		});
++	}
++	
++	/**
++	 * Erstellt ein Kontextmen&#252;, dessen Inhalt sich nach dem angegebenen TreeItem richtet.
++	 * @param item bestimmt, was f&#252;r Optionen der Anwender hat
++	 */
++	private void addContextMenu(TreeItem item) {
++		MenuManager menu = new MenuManager();
++		//die Actions erstellen und einf&#252;gen
++		
++		//wurde ein Folder selektiert?
++		Folder selected = null;//wenn der Wert null bleibt, dann wurde kein Ordner selektiert
++		if(item != null &amp;&amp; item.getData() != null &amp;&amp; item.getData() instanceof Folder) {
++			selected = (Folder)item.getData();
++		}		
++		//kann ein neuer Unterordner erstellt werden?
++		if(selected != null) {//ja
++			menu.add(new NewFolderAction(selected, GetText.gettext(&quot;NEW_SUBFOLDER&quot;)));
++		} else {//nein
++			menu.add(new NewFolderAction(GetText.gettext(&quot;NEW_FOLDER&quot;)));
++		}
++
++		//kann der selektierte Folder gel&#246;scht werden?
++		if(selected != null &amp;&amp; (!selected.hasChildren())) {
++			menu.add(new DeleteFolderAction(selected));
++		}
++		Menu contextMenu = menu.createContextMenu(resultsViewer.getTree());
++		//resultsViewer.getTree().setMenu(contextMenu);
++		contextMenu.setVisible(true);
++	}	
++	
++	/**
++	 * F&#252;gt einen ISelectionChangedListener f&#252;r die Baumdarstellung des Foldersystems
++	 * hinzu.
++	 * @param listener
++	 */
++	public void addSelectionChangedListener(ISelectionChangedListener listener) {
++		resultsViewer.addSelectionChangedListener(listener);
++	}
++	
++	/**
++	 * Aktiviert das DND f&#252;r den ResultTree. Es werden die TransferTypes
++	 * ResultTransferType.FOLDER_TYPE und ResultTransferType.URL_TYPE
++	 * unterst&#252;tzt.
++	 *
++	 */
++	protected void enableDND() 
++	{
++		int operations = DND.DROP_MOVE | DND.DROP_DEFAULT ;
++		ResultTransferType folderType = new ResultTransferType(ResultTransferType.FOLDER_TYPE);
++		ResultTransferType urlType = new ResultTransferType(ResultTransferType.URL_TYPE);
++		//Text wird zum Herausziehen erlaubt
++		//die Reihenfolge ist wichtig! 
++		Transfer[] types = new Transfer[] {folderType, urlType, TextTransfer.getInstance()};
++		final Tree tree = resultsViewer.getTree();
++		final Object[] dragItem = new Object[1];
++		final TreeItem[] dragSourceItem = new TreeItem[1];
++
++		resultsViewer.addDragSupport(operations, types, new DragSourceListener() {
++			public void dragStart(DragSourceEvent event) {
++				//TODO das brauchen wir doch nicht, da sowieso nur Webpage und Folder 
++				//enthalten sein k&#246;nnen
++				//dragItem hat ist eine Instanz von DragSource
++				dragItem[0] = event.getSource();
++				/*if (dragItem[0] instanceof Webpage) {
++//					event.doit = true;
++//				} else if(dragItem[0] instanceof Folder) {
++//					//Folder k&#246;nnen innerhalb des Baumes verschoben werden
++//					event.doit = true;
++//				} else {
++//					System.err.println(&quot;unknown type &quot; + dragItem[0].getClass());
++//					event.doit = false;
++//				}				
++				/*TreeItem[] selection = tree.getSelection();
++				if (selection.length &gt; 0) //&amp;&amp; selection[0].getItemCount() == 0) 
++				{
++					event.doit = true;
++					dragSourceItem[0] = selection[0];
++				}*/ 
++			};
++			public void dragSetData (DragSourceEvent event) {
++				//unser eingener TransferType wird bevorzugt behandelt
++				if(ResultTransferType.supports(event.dataType)) {
++					IStructuredSelection selection = (IStructuredSelection)resultsViewer.getSelection();
++					Object selected = selection.getFirstElement();
++					if(selected == null) return;
++					if(selected instanceof Folder) {
++						event.data = new String[] {ResultTransferType.FOLDER_TYPE, 
++								((Folder)selected).getID()};
++					} else {//instanceof Webpage!
++						event.data = new String[] {ResultTransferType.URL_TYPE,
++								((Webpage)selected).getURL()};
++					}
++				} else if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
++					event.data = resultsViewer.getTree().getSelection()[0].getText();
++				}
++
++			}
++			public void dragFinished(DragSourceEvent event) {
++				if (event.detail == DND.DROP_MOVE) {
++					//die Bearbeitung wird vom Ziel vorgenommen
++					
++					//dragSourceItem[0].dispose();
++					dragSourceItem[0] = null;
++
++				}
++			}
++		});
++		
++		resultsViewer.addDropSupport(operations, types, new DropTargetAdapter() {
++			public void dragOver(DropTargetEvent event) {
++				event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
++				if (event.item != null) {
++					TreeItem item = (TreeItem)event.item;
++					Point pt = Display.getCurrent().map(null, tree, event.x, event.y);
++					Rectangle bounds = item.getBounds();
++					if (pt.y &lt; bounds.y + bounds.height/3) {
++						event.feedback |= DND.FEEDBACK_INSERT_BEFORE;
++					} else if (pt.y &gt; bounds.y + 2*bounds.height/3) {
++						event.feedback |= DND.FEEDBACK_INSERT_AFTER;
++					} else {
++						event.feedback |= DND.FEEDBACK_SELECT;
++					}
++				}
++			}
++			public void drop(DropTargetEvent event) {
++				if (event.data == null) {
++					event.detail = DND.DROP_NONE;
++					return;
++				}
++				String parentFolderID = &quot;&quot;;
++				//String text = (String)event.data;
++				if (event.item == null) {
++					//TreeItem item = new TreeItem(tree, SWT.NONE);
++					//item.setText(text);
++					//die ParentFolderID nicht &#228;ndern
++				} else {
++					// get item the cursor is hovering over
++					TreeItem item = (TreeItem)event.item;
++					Folder currentFolder;
++					if(item.getData() instanceof Folder) {
++						currentFolder = (Folder)item.getData();
++					} else {//das Item ist eine Webpage
++						currentFolder = (Folder)item.getParentItem().getData();
++					}
++					 
++					// get cursor position
++					Point pt = Display.getCurrent().map(null, tree, event.x, event.y);
++					// get item bounds
++					Rectangle bounds = item.getBounds();
++					// get parent of item
++					//ist immer ein Folder, falls existent
++					TreeItem parent = item.getParentItem();
++					// wenn item, auf das cursor zeigt, einen parent hat:
++					if (parent != null) {
++						// get all items in parent
++						//TreeItem[] items = parent.getItems();
++						Folder parentFolder = (Folder) parent.getData();
++						/*
++						 * es kann erst eingef&#252;gt werden, wenn der Server zugestimmt hat!
++						 * deshalb scheint der Index nicht gebraucht zu werden
++						 */
++//						int index = 0;
++//						// get item index
++//						for (int i = 0; i &lt; items.length; i++) {
++//							if (items[i] == item) {
++//								index = i;
++//								break;
++//							}
++//						}
++//						// if in upper third of item insert source before item
++						if (pt.y &lt; bounds.y + bounds.height/3) {
++//							TreeItem newItem = new TreeItem(parent, SWT.NONE, index);
++//							newItem.setText(text);
++							parentFolderID = parentFolder.getID();
++							// if in lower third of item insert source after item
++						} else if (pt.y &gt; bounds.y + 2*bounds.height/3) {
++//							TreeItem newItem = new TreeItem(parent, SWT.NONE, index+1);
++//							newItem.setText(text);
++							parentFolderID = parentFolder.getID();
++							// if on item create subitem of item
++						} else {
++//							TreeItem newItem = new TreeItem(item, SWT.NONE);
++//							newItem.setText(text);
++							parentFolderID = currentFolder.getID();
++						}
++						
++						// wenn item, auf das cursor zeigt, kein parent hat (in root liegt):
++					} else {
++						/*
++						 * erst den Server fragen
++						 *
++						TreeItem[] items = tree.getItems();
++						int index = 0;
++						for (int i = 0; i &lt; items.length; i++) {
++							if (items[i] == item) {
++								index = i;
++								break;
++							}
++						}
++						*/
++						if (pt.y &lt; bounds.y + bounds.height/3) {
++//							TreeItem newItem = new TreeItem(tree, SWT.NONE, index);
++//							newItem.setText(text);
++						} else if (pt.y &gt; bounds.y + 2*bounds.height/3) {
++//							TreeItem newItem = new TreeItem(tree, SWT.NONE, index+1);
++//							newItem.setText(text);
++						} else {
++//							TreeItem newItem = new TreeItem(item, SWT.NONE);
++//							newItem.setText(text);
++							parentFolderID = currentFolder.getID();		
++						}
++						
++					}				
++				}
++				//die Nachrichten an den Server senden
++				if(ResultTransferType.supports(event.currentDataType)) {
++					String[] data = (String[]) event.data;
++					String type = data[0];
++					if(type.equals(ResultTransferType.FOLDER_TYPE)) {
++						for (int i = 1; i &lt; data.length; i++) {
++							model.getOpenProject().getFolderTree().requestChangeParent(data[i] , parentFolderID);
++						}
++					} else if(type.equals(ResultTransferType.URL_TYPE)) {
++						//die Wurzel sollte keine URLs erhalten
++						String rootID = model.getOpenProject().getFolderTree().getFolderRoot().getID();
++						if(rootID.equals(parentFolderID) || parentFolderID == null
++								|| parentFolderID.equals(&quot;&quot;)) return;
++						for (int i = 1; i &lt; data.length; i++) {
++							model.getOpenProject().getFolderTree()
++								.requestChangeParentForURL(parentFolderID, data[i]);
++						}
++					}
++				}
++			}
++		});
++	}
++
++}
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultsViewerLabelProvider.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultsViewerLabelProvider.java	2006-04-02 10:20:30 UTC (rev 30)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultsViewerLabelProvider.java	2006-04-02 15:54:52 UTC (rev 31)
+@@ -50,31 +50,13 @@
+ 			if(((Webpage)element).getTitle() == null) {
+ 				return &quot;no title&quot;;
+ 			} else {
+-				return ((Webpage)element).getTitle() 
+-				+&quot; (&quot; + ((Webpage)element).getName() + &quot;)&quot;;
++				return ((Webpage)element).getTitle(); 
++				//+&quot; (&quot; + ((Webpage)element).getName() + &quot;)&quot;;
+ 			}
+ 		} else {
+ 			throw unknownElement(element);
+ 		}
+ 	}
+-	
+-	public String getText(Object element, int output) {
+-		if(output == ResultDialog.RATING) {
+-			if (element instanceof Webpage) {
+-				String comment = ((Webpage)element).getComment();
+-				if( comment == null) {
+-					return &quot;No Comment&quot;;
+-				} else {
+-					return comment;
+-				}
+-			} else if(element instanceof Folder) {
+-				return &quot;&quot;;
+-			} else {
+-				throw unknownElement(element);
+-			}
+-		}
+-		return &quot;No output specified&quot;;
+-	}
+ 
+ 	public void dispose() {
+ 	}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000004.html">[Posemuckel-svn] r30 - in trunk/Posemuckel: build-dist src/posemuckel/client/net src/posemuckel/server
+</A></li>
+	<LI>Next message: <A HREF="000006.html">[Posemuckel-svn] r32 - trunk/Posemuckel/doc/userdoc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#5">[ date ]</a>
+              <a href="thread.html#5">[ thread ]</a>
+              <a href="subject.html#5">[ subject ]</a>
+              <a href="author.html#5">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/posemuckel-svn">More information about the Posemuckel-svn
+mailing list</a><br>
+</body></html>

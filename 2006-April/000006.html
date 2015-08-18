@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Posemuckel-svn] r32 - trunk/Posemuckel/doc/userdoc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/posemuckel-svn/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r32%20-%20trunk/Posemuckel/doc/userdoc&In-Reply-To=%3C200604091543.k39FhHMX025583%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000005.html">
+   <LINK REL="Next"  HREF="000007.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Posemuckel-svn] r32 - trunk/Posemuckel/doc/userdoc</H1>
+    <B>tabu at berlios.de</B> 
+    <A HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r32%20-%20trunk/Posemuckel/doc/userdoc&In-Reply-To=%3C200604091543.k39FhHMX025583%40sheep.berlios.de%3E"
+       TITLE="[Posemuckel-svn] r32 - trunk/Posemuckel/doc/userdoc">tabu at berlios.de
+       </A><BR>
+    <I>Sun Apr  9 17:43:17 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000005.html">[Posemuckel-svn] r31 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer
+</A></li>
+        <LI>Next message: <A HREF="000007.html">[Posemuckel-svn] r33 - trunk/Posemuckel/src/posemuckel
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#6">[ date ]</a>
+              <a href="thread.html#6">[ thread ]</a>
+              <a href="subject.html#6">[ subject ]</a>
+              <a href="author.html#6">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: tabu
+Date: 2006-04-09 17:42:55 +0200 (Sun, 09 Apr 2006)
+New Revision: 32
+
+Modified:
+   trunk/Posemuckel/doc/userdoc/LEDs.htm
+Log:
+habe noch ein paar S?\195?\164tze hinzugef?\195?\188gt. Nach l?\195?\164ngerem Nachdenken scheint mir die Konstruktion recht kompliziert. 
+Vielleicht k?\195?\182nnen wir ToolTips verwenden, um den Anwendern die Bedeutung der Icons anzuzeigen?
+
+Tanja
+
+Modified: trunk/Posemuckel/doc/userdoc/LEDs.htm
+===================================================================
+--- trunk/Posemuckel/doc/userdoc/LEDs.htm	2006-04-02 15:54:52 UTC (rev 31)
++++ trunk/Posemuckel/doc/userdoc/LEDs.htm	2006-04-09 15:42:55 UTC (rev 32)
+@@ -13,55 +13,76 @@
+     &lt;/P&gt;
+     &lt;H3&gt;Bedeutung der LEDs&lt;/H3&gt;
+     &lt;P&gt;
+-      Die LED vor dem Benutzernamen kann verschiedene Zust&#228;nde annehmen:
++      Die LED vor dem Benutzernamen kann verschiedene Zust&#228;nde annehmen, die
++      den Onlinestatus des Benutzers wiederspiegeln.
+     &lt;/P&gt;
+     &lt;TABLE border=&quot;1&quot; cellpadding=&quot;10&quot;&gt;
+       &lt;TR&gt;
+-        &lt;TD&gt;
++        &lt;TD&gt;
++           
+         &lt;/TD&gt;
+         &lt;TD&gt;
+           Farbe: grau
+         &lt;/TD&gt;
+         &lt;TD&gt;
+           Farbe: gr&#252;n
+-        &lt;/TD&gt;
++        &lt;/TD&gt;
++        &lt;TD&gt;
++          Farbe: rot
++        &lt;/TD&gt; 
+       &lt;/TR&gt;
+       &lt;TR&gt;
+         &lt;TD&gt;
+           ohne Markierung:
+         &lt;/TD&gt;
+         &lt;TD&gt;
+-          offline
++          unbekannt
+         &lt;/TD&gt;
+         &lt;TD&gt;
+           online
+-        &lt;/TD&gt;
++        &lt;/TD&gt;
++                &lt;TD&gt;
++          offline
++        &lt;/TD&gt;
++ 
+       &lt;/TR&gt;
+       &lt;TR&gt;
+         &lt;TD&gt;
+           Markierung:
+-          &lt;B&gt;P&lt;/B&gt;
++          &lt;B&gt;P&lt;/B&gt; (Projekt)
+         &lt;/TD&gt;
+         &lt;TD&gt;
+           -----
+         &lt;/TD&gt;
+         &lt;TD&gt;
+-          online und in einem Projekt
+-        &lt;/TD&gt;
++          online und zur Zeit im gleichen Projekt t&#228;tig wie Sie
++        &lt;/TD&gt;
++        &lt;td&gt;
++	        ----
++        &lt;/td&gt;
+       &lt;/TR&gt;
+       &lt;TR&gt;
+         &lt;TD&gt;
+           Markierung:
+           &lt;B&gt;?&lt;/B&gt;
+-        &lt;/TD&gt;
+         &lt;TD&gt;
+           Online-Status unbekannt
+         &lt;/TD&gt;
+         &lt;TD&gt;
+           -----
+-        &lt;/TD&gt;
+-      &lt;/TR&gt;
+-    &lt;/TABLE&gt;
++        &lt;/TD&gt;
++        &lt;td&gt;----&lt;/td&gt;
++      &lt;/TR&gt;
++      &lt;tr&gt;
++      &lt;td&gt;Steht der Benutzer auf der Buddyliste?&lt;/td&gt;
++      &lt;td&gt;nein&lt;/td&gt;
++      &lt;td&gt;ohne P: ja; sonst unbekannt&lt;/td&gt;
++      &lt;td&gt;ja&lt;/td&gt;
++      &lt;/tr&gt;
++    &lt;/TABLE&gt;
++    &lt;p&gt;Eine Markierung wird nur dann verwendet, wenn Sie ein Projekt ge&#246;ffnet haben
++    und der Benutzer im gleichen Projekt Mitglied ist.
++    &lt;/p&gt;
+     &lt;P&gt;
+       &lt;A href=index.htm&gt;Zur&#252;ck zur &#220;bersicht&lt;/A&gt;
+     &lt;/P&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000005.html">[Posemuckel-svn] r31 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer
+</A></li>
+	<LI>Next message: <A HREF="000007.html">[Posemuckel-svn] r33 - trunk/Posemuckel/src/posemuckel
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#6">[ date ]</a>
+              <a href="thread.html#6">[ thread ]</a>
+              <a href="subject.html#6">[ subject ]</a>
+              <a href="author.html#6">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/posemuckel-svn">More information about the Posemuckel-svn
+mailing list</a><br>
+</body></html>

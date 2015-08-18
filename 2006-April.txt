@@ -1,0 +1,2086 @@
+From papa_pasta at berlios.de  Sun Apr  2 12:20:33 2006
+From: papa_pasta at berlios.de (papa_pasta at BerliOS)
+Date: Sun, 2 Apr 2006 12:20:33 +0200
+Subject: [Posemuckel-svn] r30 - in trunk/Posemuckel: build-dist src/posemuckel/client/net src/posemuckel/server
+Message-ID: <200604021020.k32AKXAx027023@sheep.berlios.de>
+
+Author: papa_pasta
+Date: 2006-04-02 12:20:30 +0200 (Sun, 02 Apr 2006)
+New Revision: 30
+
+Modified:
+   trunk/Posemuckel/build-dist/build.xml
+   trunk/Posemuckel/build-dist/posemuckel.in
+   trunk/Posemuckel/src/posemuckel/client/net/Client.java
+   trunk/Posemuckel/src/posemuckel/server/Server.java
+Log:
+Habe Versionsnummer f?\195?\188r das aktuelle Bugfix-Release angepasst.
+Die meisten weiteren offenen Bugs bed?\195?\188rfen gr?\195?\182?\195?\159eren ?\195?\132nderungen,
+so dass man hier einen Versionssprung bevorzugen sollte.
+
+Modified: trunk/Posemuckel/build-dist/build.xml
+===================================================================
+--- trunk/Posemuckel/build-dist/build.xml	2006-03-26 18:31:56 UTC (rev 29)
++++ trunk/Posemuckel/build-dist/build.xml	2006-04-02 10:20:30 UTC (rev 30)
+@@ -4,6 +4,7 @@
+     </description>
+ <!-- Globale Einstellungen -->
+ <property name="compiled" location="../bin"/>
++<property name="version" value="0.4.1"/>
+ 
+ <target name="linux" depends="client-bin-linux-tgz,javadoc"/>
+ 	
+@@ -26,7 +27,7 @@
+ -->
+ <target name="client-linux" description="generate the client distribution" >
+ 	<!-- Erzeuge eine JAR-Datei f?r den Server -->
+-	<jar jarfile="../dist/posemuckel-client-0.4.jar">
++	<jar jarfile="../dist/posemuckel-client-${version}.jar">
+     	<fileset dir="../bin">
+     		<exclude name="posemuckel/server/**"/>
+     		<exclude name="**/*Test*"/>
+@@ -53,7 +54,7 @@
+ -->
+ <target name="client-win32" description="generate the client distribution" >
+ 	<!-- Erzeuge eine JAR-Datei f?r den Server -->
+-	<jar jarfile="../dist/posemuckel-client-0.4.jar">
++	<jar jarfile="../dist/posemuckel-client-${version}.jar">
+     	<fileset dir="../bin">
+     		<exclude name="posemuckel/server/**"/>
+     		<exclude name="**/*Test*"/>
+@@ -74,30 +75,30 @@
+ </target>	
+ 	
+ <target name="client-bin-win32-zip" depends="client-win32" description="generate the client distribution" >
+-		<delete file="../dist/posemuckel-client-bin-win32-0.4.zip"/>
++		<delete file="../dist/posemuckel-client-bin-win32-${version}.zip"/>
+ 		<!-- Erzeuge eine Zip-Datei mit dem Client drin -->
+-		<zip destfile="../dist/posemuckel-client-bin-win32-0.4.zip">
+-			<zipfileset dir="." includes="LICENSE.txt" prefix="posemuckel-client-bin-0.4"/>
+-			<zipfileset dir="." includes="AUTHORS.txt" prefix="posemuckel-client-bin-0.4"/>
+-			<zipfileset dir="." includes="INSTALL-win32.txt" fullpath="posemuckel-client-bin-0.4/INSTALL.txt"/>
+-			<zipfileset dir="../dist" includes="posemuckel-client-0.4.jar" prefix="posemuckel-client-bin-0.4"/>
++		<zip destfile="../dist/posemuckel-client-bin-win32-${version}.zip">
++			<zipfileset dir="." includes="LICENSE.txt" prefix="posemuckel-client-bin-${version}"/>
++			<zipfileset dir="." includes="AUTHORS.txt" prefix="posemuckel-client-bin-${version}"/>
++			<zipfileset dir="." includes="INSTALL-win32.txt" fullpath="posemuckel-client-bin-${version}/INSTALL.txt"/>
++			<zipfileset dir="../dist" includes="posemuckel-client-${version}.jar" prefix="posemuckel-client-bin-${version}"/>
+ 			<!-- Das lib-Verzeichnis bef?llen -->
+-			<zipfileset dir="../lib" includes="log4j-1.2.12.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<zipfileset dir="../lib" includes="commons-codec-1.3.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<zipfileset dir="../lib" includes="org.eclipse.core.runtime_3.1.1.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<zipfileset dir="../lib" includes="org.eclipse.jface_3.1.1.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<zipfileset dir="../lib" includes="org.eclipse.swt_3.1.0.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<zipfileset dir="../lib" includes="org.eclipse.swt.win32.win32.x86_3.1.1.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<zipfileset dir="../lib" includes="**/*.dll" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<zipfileset dir="." includes="..\lib\3RD-PARTY-LICENSES.txt" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<zipfileset dir="." includes="..\lib\Apache-License.txt" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<zipfileset dir="." includes="..\lib\Eclipse-Public-License.txt" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<zipfileset dir="." includes="..\lib\Common-Public-License.txt" prefix="posemuckel-client-bin-0.4/lib"/>
++			<zipfileset dir="../lib" includes="log4j-1.2.12.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<zipfileset dir="../lib" includes="commons-codec-1.3.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<zipfileset dir="../lib" includes="org.eclipse.core.runtime_3.1.1.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<zipfileset dir="../lib" includes="org.eclipse.jface_3.1.1.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<zipfileset dir="../lib" includes="org.eclipse.swt_3.1.0.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<zipfileset dir="../lib" includes="org.eclipse.swt.win32.win32.x86_3.1.1.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<zipfileset dir="../lib" includes="**/*.dll" prefix="posemuckel-client-bin-${version}/lib"/>
++			<zipfileset dir="." includes="..\lib\3RD-PARTY-LICENSES.txt" prefix="posemuckel-client-bin-${version}/lib"/>
++			<zipfileset dir="." includes="..\lib\Apache-License.txt" prefix="posemuckel-client-bin-${version}/lib"/>
++			<zipfileset dir="." includes="..\lib\Eclipse-Public-License.txt" prefix="posemuckel-client-bin-${version}/lib"/>
++			<zipfileset dir="." includes="..\lib\Common-Public-License.txt" prefix="posemuckel-client-bin-${version}/lib"/>
+ 			<!-- Das doc-Verzeichnis bef?llen -->
+-			<zipfileset dir="../doc/userdoc" includes="**/*.htm" prefix="posemuckel-client-bin-0.4/doc/userdoc"/>
+-			<zipfileset dir="../doc/userdoc/Images" includes="**/*.jpg" prefix="posemuckel-client-bin-0.4/doc/userdoc/Images"/>
++			<zipfileset dir="../doc/userdoc" includes="**/*.htm" prefix="posemuckel-client-bin-${version}/doc/userdoc"/>
++			<zipfileset dir="../doc/userdoc/Images" includes="**/*.jpg" prefix="posemuckel-client-bin-${version}/doc/userdoc/Images"/>
+ 		</zip>
+-		<delete file="../dist/posemuckel-client-0.4.jar"/>
++		<delete file="../dist/posemuckel-client-${version}.jar"/>
+ </target>
+ 	
+ 	
+@@ -119,72 +120,72 @@
+ 		<!-- Erzeuge ein configure-Script -->
+ 		<exec dir="./" executable="autoconf">
+ 		</exec>
+- 		<delete file="../dist/posemuckel-client-bin-linux-0.4.tgz"/>
++ 		<delete file="../dist/posemuckel-client-bin-linux-${version}.tgz"/>
+ 		<!-- Erzeuge eine Tar-Gzip-Datei mit dem Client drin -->
+-		<tar destfile="../dist/posemuckel-client-bin-linux-0.4.tar">
+-			<tarfileset dir="." includes="LICENSE.txt" prefix="posemuckel-client-bin-0.4"/>
+-			<tarfileset dir="." includes="AUTHORS.txt" prefix="posemuckel-client-bin-0.4"/>
+-			<tarfileset dir="." includes="README.txt" prefix="posemuckel-client-bin-0.4"/>
+-			<tarfileset dir="." includes="posemuckel.in" prefix="posemuckel-client-bin-0.4"/>
+-			<tarfileset dir="." includes="configure" mode="755" prefix="posemuckel-client-bin-0.4"/>
+-			<tarfileset dir="." includes="INSTALL-Linux.txt" fullpath="posemuckel-client-bin-0.4/INSTALL.txt"/>
+-			<tarfileset dir="../dist" includes="posemuckel-client-0.4.jar" prefix="posemuckel-client-bin-0.4"/>
++		<tar destfile="../dist/posemuckel-client-bin-linux-${version}.tar">
++			<tarfileset dir="." includes="LICENSE.txt" prefix="posemuckel-client-bin-${version}"/>
++			<tarfileset dir="." includes="AUTHORS.txt" prefix="posemuckel-client-bin-${version}"/>
++			<tarfileset dir="." includes="README.txt" prefix="posemuckel-client-bin-${version}"/>
++			<tarfileset dir="." includes="posemuckel.in" prefix="posemuckel-client-bin-${version}"/>
++			<tarfileset dir="." includes="configure" mode="755" prefix="posemuckel-client-bin-${version}"/>
++			<tarfileset dir="." includes="INSTALL-Linux.txt" fullpath="posemuckel-client-bin-${version}/INSTALL.txt"/>
++			<tarfileset dir="../dist" includes="posemuckel-client-${version}.jar" prefix="posemuckel-client-bin-${version}"/>
+ 			<!-- Das lib-Verzeichnis bef?llen -->
+-			<tarfileset dir="../lib" includes="log4j-1.2.12.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="commons-codec-1.3.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="org.eclipse.core.runtime_3.1.1.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="org.eclipse.jface_3.1.1.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="org.eclipse.swt_3.1.0.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="org.eclipse.swt.gtk.linux.x86_3.1.1.jar" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="**/*.so" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="3RD-PARTY-LICENSES.txt" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="Apache-License.txt" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="Eclipse-Public-License.txt" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="Common-Public-License.txt" prefix="posemuckel-client-bin-0.4/lib"/>
++			<tarfileset dir="../lib" includes="log4j-1.2.12.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<tarfileset dir="../lib" includes="commons-codec-1.3.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<tarfileset dir="../lib" includes="org.eclipse.core.runtime_3.1.1.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<tarfileset dir="../lib" includes="org.eclipse.jface_3.1.1.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<tarfileset dir="../lib" includes="org.eclipse.swt_3.1.0.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<tarfileset dir="../lib" includes="org.eclipse.swt.gtk.linux.x86_3.1.1.jar" prefix="posemuckel-client-bin-${version}/lib"/>
++			<tarfileset dir="../lib" includes="**/*.so" prefix="posemuckel-client-bin-${version}/lib"/>
++			<tarfileset dir="../lib" includes="3RD-PARTY-LICENSES.txt" prefix="posemuckel-client-bin-${version}/lib"/>
++			<tarfileset dir="../lib" includes="Apache-License.txt" prefix="posemuckel-client-bin-${version}/lib"/>
++			<tarfileset dir="../lib" includes="Eclipse-Public-License.txt" prefix="posemuckel-client-bin-${version}/lib"/>
++			<tarfileset dir="../lib" includes="Common-Public-License.txt" prefix="posemuckel-client-bin-${version}/lib"/>
+ 			<!-- Das doc-Verzeichnis bef?llen -->
+-			<tarfileset dir="../doc/userdoc" includes="**/*.htm" prefix="posemuckel-client-bin-0.4/doc/userdoc"/>
+-			<tarfileset dir="../doc/userdoc/Images" includes="**/*.jpg" prefix="posemuckel-client-bin-0.4/doc/userdoc/Images"/>
++			<tarfileset dir="../doc/userdoc" includes="**/*.htm" prefix="posemuckel-client-bin-${version}/doc/userdoc"/>
++			<tarfileset dir="../doc/userdoc/Images" includes="**/*.jpg" prefix="posemuckel-client-bin-${version}/doc/userdoc/Images"/>
+ 		</tar>
+-		<gzip src="../dist/posemuckel-client-bin-linux-0.4.tar" destfile="../dist/posemuckel-client-bin-linux-0.4.tgz"/>
+-	 	<delete file="../dist/posemuckel-client-bin-linux-0.4.tar"/>
++		<gzip src="../dist/posemuckel-client-bin-linux-${version}.tar" destfile="../dist/posemuckel-client-bin-linux-${version}.tgz"/>
++	 	<delete file="../dist/posemuckel-client-bin-linux-${version}.tar"/>
+ 		<delete dir="autom4te.cache"/>
+ 		<delete file="configure"/>
+-		<delete file="../dist/posemuckel-client-0.4.jar"/>
++		<delete file="../dist/posemuckel-client-${version}.jar"/>
+ </target>	
+ 	
+ 
+ <target name="sources-zip" description="generate the source zip" >
+-			<delete file="../dist/posemuckel-sources-0.4.zip"/>
++			<delete file="../dist/posemuckel-sources-${version}.zip"/>
+ 			<!-- Erzeuge eine Zip-Datei mit dem Client drin -->
+-			<zip destfile="../dist/posemuckel-sources-0.4.zip">
+-				<zipfileset dir="." includes="LICENSE.txt" prefix="posemuckel-sources-0.4"/>
+-				<zipfileset dir="." includes="AUTHORS.txt" prefix="posemuckel-sources-0.4"/>
+-				<zipfileset dir="." includes="README.txt" prefix="posemuckel-sources-0.4"/>
++			<zip destfile="../dist/posemuckel-sources-${version}.zip">
++				<zipfileset dir="." includes="LICENSE.txt" prefix="posemuckel-sources-${version}"/>
++				<zipfileset dir="." includes="AUTHORS.txt" prefix="posemuckel-sources-${version}"/>
++				<zipfileset dir="." includes="README.txt" prefix="posemuckel-sources-${version}"/>
+ 				<!-- Das src-Verzeichnis bef?llen -->
+-				<zipfileset dir="../src/posemuckel" includes="**/*.java" prefix="posemuckel-sources-0.4/src/posemuckel"/>
+-				<zipfileset dir="../src/posemuckel" includes="**/*.jpg" prefix="posemuckel-sources-0.4/src/posemuckel"/>
+-				<zipfileset dir="../src/posemuckel" includes="**/*.gif" prefix="posemuckel-sources-0.4/src/posemuckel"/>
+-				<zipfileset dir="../src/posemuckel" includes="**/*.bmp" prefix="posemuckel-sources-0.4/src/posemuckel"/>
+-				<zipfileset dir="../src/posemuckel" includes="**/*.fatjar" prefix="posemuckel-sources-0.4/src/posemuckel"/>
+-				<zipfileset dir="../src/posemuckel" includes="**/*.properties" prefix="posemuckel-sources-0.4/src/posemuckel"/>
+-				<zipfileset dir="../src/lib" includes="**/*.java" prefix="posemuckel-sources-0.4/src/lib"/>
++				<zipfileset dir="../src/posemuckel" includes="**/*.java" prefix="posemuckel-sources-${version}/src/posemuckel"/>
++				<zipfileset dir="../src/posemuckel" includes="**/*.jpg" prefix="posemuckel-sources-${version}/src/posemuckel"/>
++				<zipfileset dir="../src/posemuckel" includes="**/*.gif" prefix="posemuckel-sources-${version}/src/posemuckel"/>
++				<zipfileset dir="../src/posemuckel" includes="**/*.bmp" prefix="posemuckel-sources-${version}/src/posemuckel"/>
++				<zipfileset dir="../src/posemuckel" includes="**/*.fatjar" prefix="posemuckel-sources-${version}/src/posemuckel"/>
++				<zipfileset dir="../src/posemuckel" includes="**/*.properties" prefix="posemuckel-sources-${version}/src/posemuckel"/>
++				<zipfileset dir="../src/lib" includes="**/*.java" prefix="posemuckel-sources-${version}/src/lib"/>
+ 				<!-- Das server-Verzeichnis bef?llen -->
+-				<zipfileset dir="../server" includes="**/*.php" prefix="posemuckel-sources-0.4/server"/>
+-				<zipfileset dir="../server" includes="**/*.tpl" prefix="posemuckel-sources-0.4/server"/>
+-				<zipfileset dir="../server" includes="**/*.png" prefix="posemuckel-sources-0.4/server"/>
+-				<zipfileset dir="../server" includes="**/*.gif" prefix="posemuckel-sources-0.4/server"/>
+-				<zipfileset dir="../server" includes="**/*.jpg" prefix="posemuckel-sources-0.4/server"/>
+-				<zipfileset dir="../server/conf" includes="**/*.*" prefix="posemuckel-sources-0.4/server"/>
+-				<zipfileset file="../server/www/lib/LICENSE.txt" prefix="posemuckel-sources-0.4/server/www/lib"/>
+-				<zipfileset file="../server/db.sql" prefix="posemuckel-sources-0.4/server"/>
+-				<zipfileset file="../server/db_test.sql" prefix="posemuckel-sources-0.4/server"/>
++				<zipfileset dir="../server" includes="**/*.php" prefix="posemuckel-sources-${version}/server"/>
++				<zipfileset dir="../server" includes="**/*.tpl" prefix="posemuckel-sources-${version}/server"/>
++				<zipfileset dir="../server" includes="**/*.png" prefix="posemuckel-sources-${version}/server"/>
++				<zipfileset dir="../server" includes="**/*.gif" prefix="posemuckel-sources-${version}/server"/>
++				<zipfileset dir="../server" includes="**/*.jpg" prefix="posemuckel-sources-${version}/server"/>
++				<zipfileset dir="../server/conf" includes="**/*.*" prefix="posemuckel-sources-${version}/server"/>
++				<zipfileset file="../server/www/lib/LICENSE.txt" prefix="posemuckel-sources-${version}/server/www/lib"/>
++				<zipfileset file="../server/db.sql" prefix="posemuckel-sources-${version}/server"/>
++				<zipfileset file="../server/db_test.sql" prefix="posemuckel-sources-${version}/server"/>
+ 			</zip>
+ </target>	
+ 	
+ 	
+ <target name="server" description="generate the server jar">
+ 		<!-- Erzeuge eine JAR-Datei f?r den Server -->
+-		<jar jarfile="../dist/posemuckel-server-0.4.jar">
++		<jar jarfile="../dist/posemuckel-server-${version}.jar">
+ 	    	<fileset dir="../bin">
+ 	    		<exclude name="posemuckel/client/**"/>
+ 	    		<exclude name="**/*Test*"/>
+@@ -208,30 +209,30 @@
+ Daf?r sorgt die Abh?ngigkeit dieses Targets.
+ -->
+ <target name="server-bin-zip" depends="server" description="generate the server linux distribution" >
+- 		<delete file="../dist/posemuckel-server-bin-0.4.zip"/>
++ 		<delete file="../dist/posemuckel-server-bin-${version}.zip"/>
+ 		<!-- Erzeuge eine Tar-Gzip-Datei mit dem Client drin -->
+-		<zip destfile="../dist/posemuckel-server-bin-0.4.zip">
+-			<zipfileset dir="." includes="LICENSE.txt" prefix="posemuckel-server-bin-0.4"/>
+-			<zipfileset dir="." includes="AUTHORS.txt" prefix="posemuckel-server-bin-0.4"/>
+-			<zipfileset dir="." includes="README.txt" prefix="posemuckel-server-bin-0.4"/>
+-			<zipfileset dir="." includes="INSTALL-server.txt" fullpath="posemuckel-server-bin-0.4/INSTALL.txt"/>
+-			<zipfileset dir="." includes="INSTALL-de-server.txt" fullpath="posemuckel-server-bin-0.4/INSTALL-de.txt"/>
+-			<zipfileset dir="../dist" includes="posemuckel-server-0.4.jar" prefix="posemuckel-server-bin-0.4"/>
+-			<zipfileset file="../src/posemuckel/server/posemuckel_server.cfg" prefix="posemuckel-server-bin-0.4"/>
++		<zip destfile="../dist/posemuckel-server-bin-${version}.zip">
++			<zipfileset dir="." includes="LICENSE.txt" prefix="posemuckel-server-bin-${version}"/>
++			<zipfileset dir="." includes="AUTHORS.txt" prefix="posemuckel-server-bin-${version}"/>
++			<zipfileset dir="." includes="README.txt" prefix="posemuckel-server-bin-${version}"/>
++			<zipfileset dir="." includes="INSTALL-server.txt" fullpath="posemuckel-server-bin-${version}/INSTALL.txt"/>
++			<zipfileset dir="." includes="INSTALL-de-server.txt" fullpath="posemuckel-server-bin-${version}/INSTALL-de.txt"/>
++			<zipfileset dir="../dist" includes="posemuckel-server-${version}.jar" prefix="posemuckel-server-bin-${version}"/>
++			<zipfileset file="../src/posemuckel/server/posemuckel_server.cfg" prefix="posemuckel-server-bin-${version}"/>
+ 			<!-- Das lib-Verzeichnis bef?llen -->
+-			<zipfileset dir="../lib" includes="log4j-1.2.12.jar" prefix="posemuckel-server-bin-0.4/lib"/>
+-			<zipfileset dir="../lib" includes="java-getopt-1.0.12.jar" prefix="posemuckel-server-bin-0.4/lib"/>
+-			<zipfileset dir="../lib" includes="mysql-connector-java-3.1.11-bin.jar" prefix="posemuckel-server-bin-0.4/lib"/>				
+-			<zipfileset dir="../lib" includes="3RD-PARTY-LICENSES.txt" prefix="posemuckel-server-bin-0.4/lib"/>
+-			<zipfileset dir="../lib" includes="Apache-License.txt" prefix="posemuckel-server-bin-0.4/lib"/>
+-			<zipfileset dir="../lib" includes="Common-Public-License.txt" prefix="posemuckel-server-bin-0.4/lib"/>
++			<zipfileset dir="../lib" includes="log4j-1.2.12.jar" prefix="posemuckel-server-bin-${version}/lib"/>
++			<zipfileset dir="../lib" includes="java-getopt-1.0.12.jar" prefix="posemuckel-server-bin-${version}/lib"/>
++			<zipfileset dir="../lib" includes="mysql-connector-java-3.1.11-bin.jar" prefix="posemuckel-server-bin-${version}/lib"/>				
++			<zipfileset dir="../lib" includes="3RD-PARTY-LICENSES.txt" prefix="posemuckel-server-bin-${version}/lib"/>
++			<zipfileset dir="../lib" includes="Apache-License.txt" prefix="posemuckel-server-bin-${version}/lib"/>
++			<zipfileset dir="../lib" includes="Common-Public-License.txt" prefix="posemuckel-server-bin-${version}/lib"/>
+ 			<!-- Das doc-Verzeichnis bef?llen -->
+-			<zipfileset dir="../doc" includes="posemuckel_sag_de.pdf" prefix="posemuckel-server-bin-0.4/doc"/>
+-			<zipfileset dir="../doc/userdoc" prefix="posemuckel-server-bin-0.4/doc/userdoc"/>
++			<zipfileset dir="../doc" includes="posemuckel_sag_de.pdf" prefix="posemuckel-server-bin-${version}/doc"/>
++			<zipfileset dir="../doc/userdoc" prefix="posemuckel-server-bin-${version}/doc/userdoc"/>
+ 			<!-- Das server-Verzeichnis bef?llen -->
+-			<zipfileset dir="../server" prefix="posemuckel-server-bin-0.4/server"/>
++			<zipfileset dir="../server" prefix="posemuckel-server-bin-${version}/server"/>
+ 		</zip>
+-		<delete file="../dist/posemuckel-server-0.4.jar"/>
++		<delete file="../dist/posemuckel-server-${version}.jar"/>
+ </target>	
+ 
+ 	
+
+Modified: trunk/Posemuckel/build-dist/posemuckel.in
+===================================================================
+--- trunk/Posemuckel/build-dist/posemuckel.in	2006-03-26 18:31:56 UTC (rev 29)
++++ trunk/Posemuckel/build-dist/posemuckel.in	2006-04-02 10:20:30 UTC (rev 30)
+@@ -11,5 +11,5 @@
+ 
+ 
+ cd $INSTALL_DIR
+-$JAVA_BINARY -Djava.library.path=./lib -jar posemuckel-client-0.4.jar
++$JAVA_BINARY -Djava.library.path=./lib -jar posemuckel-client-0.4.1.jar
+ cd $BACK_HERE
+\ No newline at end of file
+
+Modified: trunk/Posemuckel/src/posemuckel/client/net/Client.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/net/Client.java	2006-03-26 18:31:56 UTC (rev 29)
++++ trunk/Posemuckel/src/posemuckel/client/net/Client.java	2006-04-02 10:20:30 UTC (rev 30)
+@@ -37,7 +37,7 @@
+ 	/**
+ 	 * Version des Meilensteins 
+ 	 */
+-	protected final static String VERSION = "0.4";
++	protected final static String VERSION = "0.4.1";
+ 	
+ 	/*
+ 	 * Verbindung zum Server
+
+Modified: trunk/Posemuckel/src/posemuckel/server/Server.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/server/Server.java	2006-03-26 18:31:56 UTC (rev 29)
++++ trunk/Posemuckel/src/posemuckel/server/Server.java	2006-04-02 10:20:30 UTC (rev 30)
+@@ -36,7 +36,7 @@
+ 	/**
+ 	 * Version des Servers
+ 	 */
+-    public static final String VERSION = "0.1";
++    public static final String VERSION = "0.4.1";
+   
+     /**
+      * Gibt an, ob der Server beendet ist
+
+
+
+From tabu at berlios.de  Sun Apr  2 17:55:18 2006
+From: tabu at berlios.de (tabu at berlios.de)
+Date: Sun, 2 Apr 2006 17:55:18 +0200
+Subject: [Posemuckel-svn] r31 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer
+Message-ID: <200604021555.k32FtIYR000987@sheep.berlios.de>
+
+Author: tabu
+Date: 2006-04-02 17:54:52 +0200 (Sun, 02 Apr 2006)
+New Revision: 31
+
+Added:
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultTree.java
+Modified:
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultsViewerLabelProvider.java
+Log:
+Habe die GUI f?\195?\188r das Foldersystem aus dem ResultDialog
+herausgezogen und in eine eigene Klasse verpackt. Damit ist
+der Weg frei, den Baum auch an anderer Stelle in der GUI einzubauen.
+
+Als Label f?\195?\188r die URLs wird nur noch der Titel verwendet. Ein Tooltip
+mit der URL existiert allerdings noch nicht.
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java	2006-04-02 10:20:30 UTC (rev 30)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java	2006-04-02 15:54:52 UTC (rev 31)
+@@ -35,11 +35,13 @@
+ import posemuckel.common.GetText;
+ 
+ /**
++ * In einem RatingTable werden die einzelnen Bewertungen der Anwender zu einer 
++ * Webseite tabellarisch dargestellt. F?r jeden Anwender wird aufgef?hrt, ob Notizen
++ * zu dieser Webseite vorhanden sind. 
+  * 
+  * @author Posemuckel Team
+  *
+  */
+-
+ public class RatingTable extends Composite {
+ 	
+ 	private Table table;
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java	2006-04-02 10:20:30 UTC (rev 30)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java	2006-04-02 15:54:52 UTC (rev 31)
+@@ -1,63 +1,47 @@
+ package posemuckel.client.gui.resultsviewer;
+ 
+-import org.eclipse.jface.action.MenuManager;
+ import org.eclipse.jface.dialogs.Dialog;
+ import org.eclipse.jface.dialogs.IDialogConstants;
+ import org.eclipse.jface.viewers.ISelectionChangedListener;
+ import org.eclipse.jface.viewers.IStructuredSelection;
+ import org.eclipse.jface.viewers.SelectionChangedEvent;
+-import org.eclipse.jface.viewers.TreeViewer;
+ import org.eclipse.swt.SWT;
+ import org.eclipse.swt.custom.SashForm;
+-import org.eclipse.swt.dnd.DND;
+-import org.eclipse.swt.dnd.DragSourceEvent;
+-import org.eclipse.swt.dnd.DragSourceListener;
+-import org.eclipse.swt.dnd.DropTargetAdapter;
+-import org.eclipse.swt.dnd.DropTargetEvent;
+-import org.eclipse.swt.dnd.TextTransfer;
+-import org.eclipse.swt.dnd.Transfer;
+-import org.eclipse.swt.graphics.Point;
+-import org.eclipse.swt.graphics.Rectangle;
+ import org.eclipse.swt.layout.FillLayout;
+ import org.eclipse.swt.layout.GridData;
+ import org.eclipse.swt.layout.GridLayout;
+ import org.eclipse.swt.widgets.Composite;
+ import org.eclipse.swt.widgets.Control;
+-import org.eclipse.swt.widgets.Event;
+-import org.eclipse.swt.widgets.Listener;
+-import org.eclipse.swt.widgets.Menu;
+ import org.eclipse.swt.widgets.Shell;
+-import org.eclipse.swt.widgets.Tree;
+-import org.eclipse.swt.widgets.TreeItem;
+ 
+-import posemuckel.client.gui.Colors;
+ import posemuckel.client.gui.ImageManagment;
+ import posemuckel.client.gui.MyLayoutFactory;
+-import posemuckel.client.gui.actions.DeleteFolderAction;
+-import posemuckel.client.gui.actions.NewFolderAction;
+-import posemuckel.client.gui.browser.TreeIcons;
+ import posemuckel.client.model.Folder;
+ import posemuckel.client.model.Model;
+ import posemuckel.client.model.Root;
+ import posemuckel.client.model.Webpage;
+ import posemuckel.common.GetText;
+ 
++/**
++ * Baut das Ergebnisfenster zusammen und erm?glicht es dem Anwender, 
++ * die einzelnen Webseiten aus der Ergebnistabelle per Drag and Drop
++ * in das Foldersystem einzusortieren.
++ * 
++ * @author Posemuckel Team
++ *
++ */
+ public class ResultDialog extends Dialog {
+ 
+-	private TreeViewer resultsViewer;
+-	private ResultsViewerLabelProvider labelProvider;
+-	public static final int RATING = 100;
+-	private Model model;
++	private ResultTree resultTree;
+ 	private RatingTable singleRating;
+ 	
+ 	public ResultDialog(Shell shell) {
+ 		super(shell);
+-		model = Model.getModel();
+ 	}
+ 
+ 	protected Control createDialogArea(Composite parent)
+ 	{
+-		Colors.initColors();
++		//Colors.initColors();
+ 		GridLayout layout = new GridLayout();
+ 		Composite comp = (Composite)super.createDialogArea(parent);
+ 		layout.numColumns = 1;
+@@ -72,38 +56,18 @@
+ 		layoutData.minimumHeight=500;
+ 		layoutData.minimumWidth=800;
+ 		sash.setLayoutData(layoutData);
++		//die Komponenten einsetzen
+ 		singleRating = addTable(sash);
+-		resultsViewer = new TreeViewer(sash);
+-		resultsViewer.setContentProvider(new ResultsViewerContentProvider());
+-		//labelProvider = new ResultsViewerLabelProvider();
+-		labelProvider = new ResultsViewerLabelProvider(TreeIcons.getIcons());
+-		resultsViewer.setLabelProvider(labelProvider);
++		resultTree = new ResultTree(sash);
+ 		addListeners();
+-		resultsViewer.setUseHashlookup(true);
+-		
+-		// layout the tree viewer
+-		layoutData = new GridData();
+-		layoutData.minimumWidth = 300;
+-		layoutData.minimumHeight = 300;		
+-		resultsViewer.getControl().setLayoutData(layoutData);
+-		
++		resultTree.setInput(getInitialInput());
+ 		// Create menu, toolbars, filters, sorters.
+ 		//createFiltersAndSorters();
+ 		//createActions();
+ 		//createMenus();
+ 		//createToolbar();
+-		createContextMenu(resultsViewer);
+-		//addListeners(); //  funktioniert irgendwie nicht richtig, daher erst mal deaktiviert	
+-		enableDND();
++		resultTree.enableDND();
+ 		
+-		resultsViewer.setInput(getInitialInput());
+-		resultsViewer.expandAll();
+-		
+-		// get data from DB
+-
+-		//setStatus(GetText.gettext("STATUSLINE"));
+-		
+-		//getShell().setText("Results for ...");
+ 		getShell().setText(GetText.macroreplace(GetText.gettext("PROJECT_RESULTS"),"PROJ",Model.getModel().getOpenProject().getTopic()));
+ 		getShell().setImage(ImageManagment.getRegistry().get(ImageManagment.SHELL_ICON));
+ 		return comp;
+@@ -121,6 +85,7 @@
+ 			Composite tvComp = new Composite(child, SWT.NONE);
+ 			tvComp.setLayout(new FillLayout());	
+ 			tvComp.setLayoutData(getGridData());
++			Model model = Model.getModel();
+ 			return new WebtraceTable(tvComp, 
+ 					model.getOpenProject().getWebtrace(), model).getRatingTable();
+ 			//die Instanz von RatingTable abfragen und zur?ckgeben			
+@@ -133,223 +98,30 @@
+ 			return gridData;
+ 		}
+ 
+-	protected void addListeners() {
+-		resultsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+-			//TODO an die Kommentare anschliessen
+-			public void selectionChanged(SelectionChangedEvent event) {
+-				// if the selection is empty do nothing
+-				if(event.getSelection().isEmpty()) {
+-					return;
+-				}
+-				if(event.getSelection() instanceof IStructuredSelection) {
+-					IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+-					Object selected = (Root) selection.getFirstElement();
+-					if(selected instanceof Webpage) {
+-						singleRating.setInput((Webpage)selected);
++		protected void addListeners() {
++			resultTree.addSelectionChangedListener(new ISelectionChangedListener() {
++				//TODO an die Kommentare anschliessen
++				public void selectionChanged(SelectionChangedEvent event) {
++					// if the selection is empty do nothing
++					if(event.getSelection().isEmpty()) {
++						return;
+ 					}
+-					//text_selection.setText(labelProvider.getText(selected, RATING));
+-				}
+-			}
+-		});
+-	}
+-
+-		
+-	protected void enableDND() 
+-	{
+-		int operations = DND.DROP_MOVE | DND.DROP_DEFAULT ;
+-		ResultTransferType folderType = new ResultTransferType(ResultTransferType.FOLDER_TYPE);
+-		ResultTransferType urlType = new ResultTransferType(ResultTransferType.URL_TYPE);
+-		//Text wird zum Herausziehen erlaubt
+-		//die Reihenfolge ist wichtig! 
+-		Transfer[] types = new Transfer[] {folderType, urlType, TextTransfer.getInstance()};
+-		final Tree tree = resultsViewer.getTree();
+-		final Object[] dragItem = new Object[1];
+-		final TreeItem[] dragSourceItem = new TreeItem[1];
+-
+-		resultsViewer.addDragSupport(operations, types, new DragSourceListener() {
+-			public void dragStart(DragSourceEvent event) {
+-				//TODO das brauchen wir doch nicht, da sowieso nur Webpage und Folder 
+-				//enthalten sein k?nnen
+-				//dragItem hat ist eine Instanz von DragSource
+-				dragItem[0] = event.getSource();
+-				/*if (dragItem[0] instanceof Webpage) {
+-//					event.doit = true;
+-//				} else if(dragItem[0] instanceof Folder) {
+-//					//Folder k?nnen innerhalb des Baumes verschoben werden
+-//					event.doit = true;
+-//				} else {
+-//					System.err.println("unknown type " + dragItem[0].getClass());
+-//					event.doit = false;
+-//				}				
+-				/*TreeItem[] selection = tree.getSelection();
+-				if (selection.length > 0) //&& selection[0].getItemCount() == 0) 
+-				{
+-					event.doit = true;
+-					dragSourceItem[0] = selection[0];
+-				}*/ 
+-			};
+-			public void dragSetData (DragSourceEvent event) {
+-				//unser eingener TransferType wird bevorzugt behandelt
+-				if(ResultTransferType.supports(event.dataType)) {
+-					IStructuredSelection selection = (IStructuredSelection)resultsViewer.getSelection();
+-					Object selected = selection.getFirstElement();
+-					if(selected == null) return;
+-					if(selected instanceof Folder) {
+-						event.data = new String[] {ResultTransferType.FOLDER_TYPE, 
+-								((Folder)selected).getID()};
+-					} else {//instanceof Webpage!
+-						event.data = new String[] {ResultTransferType.URL_TYPE,
+-								((Webpage)selected).getURL()};
+-					}
+-				} else if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
+-					event.data = resultsViewer.getTree().getSelection()[0].getText();
+-				}
+-
+-			}
+-			public void dragFinished(DragSourceEvent event) {
+-				if (event.detail == DND.DROP_MOVE) {
+-					//die Bearbeitung wird vom Ziel vorgenommen
+-					
+-					//dragSourceItem[0].dispose();
+-					dragSourceItem[0] = null;
+-
+-				}
+-			}
+-		});
+-		
+-		resultsViewer.addDropSupport(operations, types, new DropTargetAdapter() {
+-			public void dragOver(DropTargetEvent event) {
+-				event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
+-				if (event.item != null) {
+-					TreeItem item = (TreeItem)event.item;
+-					Point pt = getShell().getDisplay().map(null, tree, event.x, event.y);
+-					Rectangle bounds = item.getBounds();
+-					if (pt.y < bounds.y + bounds.height/3) {
+-						event.feedback |= DND.FEEDBACK_INSERT_BEFORE;
+-					} else if (pt.y > bounds.y + 2*bounds.height/3) {
+-						event.feedback |= DND.FEEDBACK_INSERT_AFTER;
+-					} else {
+-						event.feedback |= DND.FEEDBACK_SELECT;
+-					}
+-				}
+-			}
+-			public void drop(DropTargetEvent event) {
+-				if (event.data == null) {
+-					event.detail = DND.DROP_NONE;
+-					return;
+-				}
+-				String parentFolderID = "";
+-				//String text = (String)event.data;
+-				if (event.item == null) {
+-					//TreeItem item = new TreeItem(tree, SWT.NONE);
+-					//item.setText(text);
+-					//die ParentFolderID nicht ?ndern
+-				} else {
+-					// get item the cursor is hovering over
+-					TreeItem item = (TreeItem)event.item;
+-					Folder currentFolder;
+-					if(item.getData() instanceof Folder) {
+-						currentFolder = (Folder)item.getData();
+-					} else {//das Item ist eine Webpage
+-						currentFolder = (Folder)item.getParentItem().getData();
+-					}
+-					 
+-					// get cursor position
+-					Point pt = getShell().getDisplay().map(null, tree, event.x, event.y);
+-					// get item bounds
+-					Rectangle bounds = item.getBounds();
+-					// get parent of item
+-					//ist immer ein Folder, falls existent
+-					TreeItem parent = item.getParentItem();
+-					// wenn item, auf das cursor zeigt, einen parent hat:
+-					if (parent != null) {
+-						// get all items in parent
+-						//TreeItem[] items = parent.getItems();
+-						Folder parentFolder = (Folder) parent.getData();
+-						/*
+-						 * es kann erst eingef?gt werden, wenn der Server zugestimmt hat!
+-						 * deshalb scheint der Index nicht gebraucht zu werden
+-						 */
+-//						int index = 0;
+-//						// get item index
+-//						for (int i = 0; i < items.length; i++) {
+-//							if (items[i] == item) {
+-//								index = i;
+-//								break;
+-//							}
+-//						}
+-//						// if in upper third of item insert source before item
+-						if (pt.y < bounds.y + bounds.height/3) {
+-//							TreeItem newItem = new TreeItem(parent, SWT.NONE, index);
+-//							newItem.setText(text);
+-							parentFolderID = parentFolder.getID();
+-							// if in lower third of item insert source after item
+-						} else if (pt.y > bounds.y + 2*bounds.height/3) {
+-//							TreeItem newItem = new TreeItem(parent, SWT.NONE, index+1);
+-//							newItem.setText(text);
+-							parentFolderID = parentFolder.getID();
+-							// if on item create subitem of item
+-						} else {
+-//							TreeItem newItem = new TreeItem(item, SWT.NONE);
+-//							newItem.setText(text);
+-							parentFolderID = currentFolder.getID();
++					if(event.getSelection() instanceof IStructuredSelection) {
++						IStructuredSelection selection = (IStructuredSelection)event.getSelection();
++						Object selected = (Root) selection.getFirstElement();
++						if(selected instanceof Webpage) {
++							singleRating.setInput((Webpage)selected);
+ 						}
+-						
+-						// wenn item, auf das cursor zeigt, kein parent hat (in root liegt):
+-					} else {
+-						/*
+-						 * erst den Server fragen
+-						 *
+-						TreeItem[] items = tree.getItems();
+-						int index = 0;
+-						for (int i = 0; i < items.length; i++) {
+-							if (items[i] == item) {
+-								index = i;
+-								break;
+-							}
+-						}
+-						*/
+-						if (pt.y < bounds.y + bounds.height/3) {
+-//							TreeItem newItem = new TreeItem(tree, SWT.NONE, index);
+-//							newItem.setText(text);
+-						} else if (pt.y > bounds.y + 2*bounds.height/3) {
+-//							TreeItem newItem = new TreeItem(tree, SWT.NONE, index+1);
+-//							newItem.setText(text);
+-						} else {
+-//							TreeItem newItem = new TreeItem(item, SWT.NONE);
+-//							newItem.setText(text);
+-							parentFolderID = currentFolder.getID();		
+-						}
+-						
+-					}				
+-				}
+-				//die Nachrichten an den Server senden
+-				if(ResultTransferType.supports(event.currentDataType)) {
+-					String[] data = (String[]) event.data;
+-					String type = data[0];
+-					if(type.equals(ResultTransferType.FOLDER_TYPE)) {
+-						for (int i = 1; i < data.length; i++) {
+-							model.getOpenProject().getFolderTree().requestChangeParent(data[i] , parentFolderID);
+-						}
+-					} else if(type.equals(ResultTransferType.URL_TYPE)) {
+-						//die Wurzel sollte keine URLs erhalten
+-						String rootID = model.getOpenProject().getFolderTree().getFolderRoot().getID();
+-						if(rootID.equals(parentFolderID) || parentFolderID == null
+-								|| parentFolderID.equals("")) return;
+-						for (int i = 1; i < data.length; i++) {
+-							model.getOpenProject().getFolderTree()
+-								.requestChangeParentForURL(parentFolderID, data[i]);
+-						}
++						//text_selection.setText(labelProvider.getText(selected, RATING));
+ 					}
+ 				}
+-			}
+-		});
+-	}
++			});
++		}
+ 	
+ 	
+ 	public Folder getInitialInput() 
+ 	{
+-		return model.getOpenProject().getFolderTree().getFolderRoot();
++		return Model.getModel().getOpenProject().getFolderTree().getFolderRoot();
+ 	}
+ 	
+ 	
+@@ -369,56 +141,4 @@
+ 		}
+ 	}
+ 	
+-	/**
+-	 * Erstellt einen Listener, der auf Klicks mit der rechten Maustaste reagiert.
+-	 * Es wird ein Kontextmen?, welches sich nach der Selektion richtet, erstellt.
+-	 * 
+-	 * @param treeViewer, dessen Control das Kontextmen? erhalten soll
+-	 */
+-	private void createContextMenu(final TreeViewer treeViewer) {
+-		treeViewer.getTree().addListener(SWT.MouseDown, new Listener() {
+-
+-			public void handleEvent(Event event) {
+-				Point point = new Point(event.x, event.y);
+-				if (treeViewer.getTree().getMenu()!=null) {
+-					treeViewer.getTree().getMenu().dispose();
+-				}
+-				TreeItem item= treeViewer.getTree().getItem(point);
+-				if (event.button==3) {
+-					addContextMenu(item);
+-				}
+-			}
+-			
+-		});
+-	}
+-	
+-	/**
+-	 * Erstellt ein Kontextmen?, dessen Inhalt sich nach dem angegebenen TreeItem richtet.
+-	 * @param item bestimmt, was f?r Optionen der Anwender hat
+-	 */
+-	private void addContextMenu(TreeItem item) {
+-		MenuManager menu = new MenuManager();
+-		//die Actions erstellen und einf?gen
+-		
+-		//wurde ein Folder selektiert?
+-		Folder selected = null;//wenn der Wert null bleibt, dann wurde kein Ordner selektiert
+-		if(item != null && item.getData() != null && item.getData() instanceof Folder) {
+-			selected = (Folder)item.getData();
+-		}		
+-		//kann ein neuer Unterordner erstellt werden?
+-		if(selected != null) {//ja
+-			menu.add(new NewFolderAction(selected, GetText.gettext("NEW_SUBFOLDER")));
+-		} else {//nein
+-			menu.add(new NewFolderAction(GetText.gettext("NEW_FOLDER")));
+-		}
+-
+-		//kann der selektierte Folder gel?scht werden?
+-		if(selected != null && (!selected.hasChildren())) {
+-			menu.add(new DeleteFolderAction(selected));
+-		}
+-		Menu contextMenu = menu.createContextMenu(resultsViewer.getTree());
+-		//resultsViewer.getTree().setMenu(contextMenu);
+-		contextMenu.setVisible(true);
+-	}
+-
+ }
+
+Added: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultTree.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultTree.java	2006-04-02 10:20:30 UTC (rev 30)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultTree.java	2006-04-02 15:54:52 UTC (rev 31)
+@@ -0,0 +1,352 @@
++/**
++ * 
++ */
++package posemuckel.client.gui.resultsviewer;
++
++import org.eclipse.jface.action.MenuManager;
++import org.eclipse.jface.viewers.ISelectionChangedListener;
++import org.eclipse.jface.viewers.IStructuredSelection;
++import org.eclipse.jface.viewers.TreeViewer;
++import org.eclipse.swt.SWT;
++import org.eclipse.swt.dnd.DND;
++import org.eclipse.swt.dnd.DragSourceEvent;
++import org.eclipse.swt.dnd.DragSourceListener;
++import org.eclipse.swt.dnd.DropTargetAdapter;
++import org.eclipse.swt.dnd.DropTargetEvent;
++import org.eclipse.swt.dnd.TextTransfer;
++import org.eclipse.swt.dnd.Transfer;
++import org.eclipse.swt.graphics.Point;
++import org.eclipse.swt.graphics.Rectangle;
++import org.eclipse.swt.layout.GridData;
++import org.eclipse.swt.widgets.Composite;
++import org.eclipse.swt.widgets.Display;
++import org.eclipse.swt.widgets.Event;
++import org.eclipse.swt.widgets.Listener;
++import org.eclipse.swt.widgets.Menu;
++import org.eclipse.swt.widgets.Tree;
++import org.eclipse.swt.widgets.TreeItem;
++
++import posemuckel.client.gui.actions.DeleteFolderAction;
++import posemuckel.client.gui.actions.NewFolderAction;
++import posemuckel.client.gui.browser.TreeIcons;
++import posemuckel.client.model.Folder;
++import posemuckel.client.model.Model;
++import posemuckel.client.model.Webpage;
++import posemuckel.common.GetText;
++
++/**
++ * Der ResultTree stellt die Baumstruktur 
++ * der einsortierten Webseiten dar. Innerhalb des Baumes
++ * k?nnen die Webseiten per Drag and Drop verschoben werden.
++ * 
++ * @author Posemuckel Team
++ *
++ */
++public class ResultTree {
++	//durch Refactoring aus der Klasse ResultDialog herausgezogen
++	
++	private TreeViewer resultsViewer;
++	private ResultsViewerLabelProvider labelProvider;
++	private Model model;
++	
++	
++	/**
++	 * Erstellt eine GUI f?r das Foldersystem.
++	 * @param parent in dem der ResultTree dargestellt werden soll
++	 */
++	public ResultTree(Composite parent) {
++		model = Model.getModel();
++		buildAndLayoutTree(parent);
++	}
++	
++	/**
++	 * Setzt den Folder, der den Einstieg in das Foldersystem repr?sentiert.
++	 * 
++	 * @param root Wurzelfolder
++	 */
++	public void setInput(Folder root) {
++		resultsViewer.setInput(root);
++		resultsViewer.expandAll();
++	}
++	
++	/**
++	 * Setzt den ResultTree zusammen. F?r den Baum wird Hashlookup verwendet. 
++	 * Das Kontextmen? des Baumes bezieht ein, welches Element selektiert wurde.
++	 * @param parent
++	 */
++	private void buildAndLayoutTree(Composite parent) {
++		resultsViewer = new TreeViewer(parent);
++		resultsViewer.setContentProvider(new ResultsViewerContentProvider());
++		//labelProvider = new ResultsViewerLabelProvider();
++		labelProvider = new ResultsViewerLabelProvider(TreeIcons.getIcons());
++		resultsViewer.setLabelProvider(labelProvider);
++		resultsViewer.setUseHashlookup(true);
++		
++		// layout the tree viewer
++		GridData layoutData = new GridData();
++		layoutData.minimumWidth = 300;
++		layoutData.minimumHeight = 300;		
++		resultsViewer.getControl().setLayoutData(layoutData);
++		createContextMenu(resultsViewer);
++	}
++	
++	/**
++	 * Erstellt einen Listener, der auf Klicks mit der rechten Maustaste reagiert.
++	 * Es wird ein Kontextmen?, welches sich nach der Selektion richtet, erstellt.
++	 * 
++	 * @param treeViewer, dessen Control das Kontextmen? erhalten soll
++	 */
++	private void createContextMenu(final TreeViewer treeViewer) {
++		treeViewer.getTree().addListener(SWT.MouseDown, new Listener() {
++
++			public void handleEvent(Event event) {
++				Point point = new Point(event.x, event.y);
++				if (treeViewer.getTree().getMenu()!=null) {
++					treeViewer.getTree().getMenu().dispose();
++				}
++				TreeItem item= treeViewer.getTree().getItem(point);
++				if (event.button==3) {
++					addContextMenu(item);
++				}
++			}
++			
++		});
++	}
++	
++	/**
++	 * Erstellt ein Kontextmen?, dessen Inhalt sich nach dem angegebenen TreeItem richtet.
++	 * @param item bestimmt, was f?r Optionen der Anwender hat
++	 */
++	private void addContextMenu(TreeItem item) {
++		MenuManager menu = new MenuManager();
++		//die Actions erstellen und einf?gen
++		
++		//wurde ein Folder selektiert?
++		Folder selected = null;//wenn der Wert null bleibt, dann wurde kein Ordner selektiert
++		if(item != null && item.getData() != null && item.getData() instanceof Folder) {
++			selected = (Folder)item.getData();
++		}		
++		//kann ein neuer Unterordner erstellt werden?
++		if(selected != null) {//ja
++			menu.add(new NewFolderAction(selected, GetText.gettext("NEW_SUBFOLDER")));
++		} else {//nein
++			menu.add(new NewFolderAction(GetText.gettext("NEW_FOLDER")));
++		}
++
++		//kann der selektierte Folder gel?scht werden?
++		if(selected != null && (!selected.hasChildren())) {
++			menu.add(new DeleteFolderAction(selected));
++		}
++		Menu contextMenu = menu.createContextMenu(resultsViewer.getTree());
++		//resultsViewer.getTree().setMenu(contextMenu);
++		contextMenu.setVisible(true);
++	}	
++	
++	/**
++	 * F?gt einen ISelectionChangedListener f?r die Baumdarstellung des Foldersystems
++	 * hinzu.
++	 * @param listener
++	 */
++	public void addSelectionChangedListener(ISelectionChangedListener listener) {
++		resultsViewer.addSelectionChangedListener(listener);
++	}
++	
++	/**
++	 * Aktiviert das DND f?r den ResultTree. Es werden die TransferTypes
++	 * ResultTransferType.FOLDER_TYPE und ResultTransferType.URL_TYPE
++	 * unterst?tzt.
++	 *
++	 */
++	protected void enableDND() 
++	{
++		int operations = DND.DROP_MOVE | DND.DROP_DEFAULT ;
++		ResultTransferType folderType = new ResultTransferType(ResultTransferType.FOLDER_TYPE);
++		ResultTransferType urlType = new ResultTransferType(ResultTransferType.URL_TYPE);
++		//Text wird zum Herausziehen erlaubt
++		//die Reihenfolge ist wichtig! 
++		Transfer[] types = new Transfer[] {folderType, urlType, TextTransfer.getInstance()};
++		final Tree tree = resultsViewer.getTree();
++		final Object[] dragItem = new Object[1];
++		final TreeItem[] dragSourceItem = new TreeItem[1];
++
++		resultsViewer.addDragSupport(operations, types, new DragSourceListener() {
++			public void dragStart(DragSourceEvent event) {
++				//TODO das brauchen wir doch nicht, da sowieso nur Webpage und Folder 
++				//enthalten sein k?nnen
++				//dragItem hat ist eine Instanz von DragSource
++				dragItem[0] = event.getSource();
++				/*if (dragItem[0] instanceof Webpage) {
++//					event.doit = true;
++//				} else if(dragItem[0] instanceof Folder) {
++//					//Folder k?nnen innerhalb des Baumes verschoben werden
++//					event.doit = true;
++//				} else {
++//					System.err.println("unknown type " + dragItem[0].getClass());
++//					event.doit = false;
++//				}				
++				/*TreeItem[] selection = tree.getSelection();
++				if (selection.length > 0) //&& selection[0].getItemCount() == 0) 
++				{
++					event.doit = true;
++					dragSourceItem[0] = selection[0];
++				}*/ 
++			};
++			public void dragSetData (DragSourceEvent event) {
++				//unser eingener TransferType wird bevorzugt behandelt
++				if(ResultTransferType.supports(event.dataType)) {
++					IStructuredSelection selection = (IStructuredSelection)resultsViewer.getSelection();
++					Object selected = selection.getFirstElement();
++					if(selected == null) return;
++					if(selected instanceof Folder) {
++						event.data = new String[] {ResultTransferType.FOLDER_TYPE, 
++								((Folder)selected).getID()};
++					} else {//instanceof Webpage!
++						event.data = new String[] {ResultTransferType.URL_TYPE,
++								((Webpage)selected).getURL()};
++					}
++				} else if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
++					event.data = resultsViewer.getTree().getSelection()[0].getText();
++				}
++
++			}
++			public void dragFinished(DragSourceEvent event) {
++				if (event.detail == DND.DROP_MOVE) {
++					//die Bearbeitung wird vom Ziel vorgenommen
++					
++					//dragSourceItem[0].dispose();
++					dragSourceItem[0] = null;
++
++				}
++			}
++		});
++		
++		resultsViewer.addDropSupport(operations, types, new DropTargetAdapter() {
++			public void dragOver(DropTargetEvent event) {
++				event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
++				if (event.item != null) {
++					TreeItem item = (TreeItem)event.item;
++					Point pt = Display.getCurrent().map(null, tree, event.x, event.y);
++					Rectangle bounds = item.getBounds();
++					if (pt.y < bounds.y + bounds.height/3) {
++						event.feedback |= DND.FEEDBACK_INSERT_BEFORE;
++					} else if (pt.y > bounds.y + 2*bounds.height/3) {
++						event.feedback |= DND.FEEDBACK_INSERT_AFTER;
++					} else {
++						event.feedback |= DND.FEEDBACK_SELECT;
++					}
++				}
++			}
++			public void drop(DropTargetEvent event) {
++				if (event.data == null) {
++					event.detail = DND.DROP_NONE;
++					return;
++				}
++				String parentFolderID = "";
++				//String text = (String)event.data;
++				if (event.item == null) {
++					//TreeItem item = new TreeItem(tree, SWT.NONE);
++					//item.setText(text);
++					//die ParentFolderID nicht ?ndern
++				} else {
++					// get item the cursor is hovering over
++					TreeItem item = (TreeItem)event.item;
++					Folder currentFolder;
++					if(item.getData() instanceof Folder) {
++						currentFolder = (Folder)item.getData();
++					} else {//das Item ist eine Webpage
++						currentFolder = (Folder)item.getParentItem().getData();
++					}
++					 
++					// get cursor position
++					Point pt = Display.getCurrent().map(null, tree, event.x, event.y);
++					// get item bounds
++					Rectangle bounds = item.getBounds();
++					// get parent of item
++					//ist immer ein Folder, falls existent
++					TreeItem parent = item.getParentItem();
++					// wenn item, auf das cursor zeigt, einen parent hat:
++					if (parent != null) {
++						// get all items in parent
++						//TreeItem[] items = parent.getItems();
++						Folder parentFolder = (Folder) parent.getData();
++						/*
++						 * es kann erst eingef?gt werden, wenn der Server zugestimmt hat!
++						 * deshalb scheint der Index nicht gebraucht zu werden
++						 */
++//						int index = 0;
++//						// get item index
++//						for (int i = 0; i < items.length; i++) {
++//							if (items[i] == item) {
++//								index = i;
++//								break;
++//							}
++//						}
++//						// if in upper third of item insert source before item
++						if (pt.y < bounds.y + bounds.height/3) {
++//							TreeItem newItem = new TreeItem(parent, SWT.NONE, index);
++//							newItem.setText(text);
++							parentFolderID = parentFolder.getID();
++							// if in lower third of item insert source after item
++						} else if (pt.y > bounds.y + 2*bounds.height/3) {
++//							TreeItem newItem = new TreeItem(parent, SWT.NONE, index+1);
++//							newItem.setText(text);
++							parentFolderID = parentFolder.getID();
++							// if on item create subitem of item
++						} else {
++//							TreeItem newItem = new TreeItem(item, SWT.NONE);
++//							newItem.setText(text);
++							parentFolderID = currentFolder.getID();
++						}
++						
++						// wenn item, auf das cursor zeigt, kein parent hat (in root liegt):
++					} else {
++						/*
++						 * erst den Server fragen
++						 *
++						TreeItem[] items = tree.getItems();
++						int index = 0;
++						for (int i = 0; i < items.length; i++) {
++							if (items[i] == item) {
++								index = i;
++								break;
++							}
++						}
++						*/
++						if (pt.y < bounds.y + bounds.height/3) {
++//							TreeItem newItem = new TreeItem(tree, SWT.NONE, index);
++//							newItem.setText(text);
++						} else if (pt.y > bounds.y + 2*bounds.height/3) {
++//							TreeItem newItem = new TreeItem(tree, SWT.NONE, index+1);
++//							newItem.setText(text);
++						} else {
++//							TreeItem newItem = new TreeItem(item, SWT.NONE);
++//							newItem.setText(text);
++							parentFolderID = currentFolder.getID();		
++						}
++						
++					}				
++				}
++				//die Nachrichten an den Server senden
++				if(ResultTransferType.supports(event.currentDataType)) {
++					String[] data = (String[]) event.data;
++					String type = data[0];
++					if(type.equals(ResultTransferType.FOLDER_TYPE)) {
++						for (int i = 1; i < data.length; i++) {
++							model.getOpenProject().getFolderTree().requestChangeParent(data[i] , parentFolderID);
++						}
++					} else if(type.equals(ResultTransferType.URL_TYPE)) {
++						//die Wurzel sollte keine URLs erhalten
++						String rootID = model.getOpenProject().getFolderTree().getFolderRoot().getID();
++						if(rootID.equals(parentFolderID) || parentFolderID == null
++								|| parentFolderID.equals("")) return;
++						for (int i = 1; i < data.length; i++) {
++							model.getOpenProject().getFolderTree()
++								.requestChangeParentForURL(parentFolderID, data[i]);
++						}
++					}
++				}
++			}
++		});
++	}
++
++}
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultsViewerLabelProvider.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultsViewerLabelProvider.java	2006-04-02 10:20:30 UTC (rev 30)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultsViewerLabelProvider.java	2006-04-02 15:54:52 UTC (rev 31)
+@@ -50,31 +50,13 @@
+ 			if(((Webpage)element).getTitle() == null) {
+ 				return "no title";
+ 			} else {
+-				return ((Webpage)element).getTitle() 
+-				+" (" + ((Webpage)element).getName() + ")";
++				return ((Webpage)element).getTitle(); 
++				//+" (" + ((Webpage)element).getName() + ")";
+ 			}
+ 		} else {
+ 			throw unknownElement(element);
+ 		}
+ 	}
+-	
+-	public String getText(Object element, int output) {
+-		if(output == ResultDialog.RATING) {
+-			if (element instanceof Webpage) {
+-				String comment = ((Webpage)element).getComment();
+-				if( comment == null) {
+-					return "No Comment";
+-				} else {
+-					return comment;
+-				}
+-			} else if(element instanceof Folder) {
+-				return "";
+-			} else {
+-				throw unknownElement(element);
+-			}
+-		}
+-		return "No output specified";
+-	}
+ 
+ 	public void dispose() {
+ 	}
+
+
+
+From tabu at berlios.de  Sun Apr  9 17:43:17 2006
+From: tabu at berlios.de (tabu at berlios.de)
+Date: Sun, 9 Apr 2006 17:43:17 +0200
+Subject: [Posemuckel-svn] r32 - trunk/Posemuckel/doc/userdoc
+Message-ID: <200604091543.k39FhHMX025583@sheep.berlios.de>
+
+Author: tabu
+Date: 2006-04-09 17:42:55 +0200 (Sun, 09 Apr 2006)
+New Revision: 32
+
+Modified:
+   trunk/Posemuckel/doc/userdoc/LEDs.htm
+Log:
+habe noch ein paar S?\195?\164tze hinzugef?\195?\188gt. Nach l?\195?\164ngerem Nachdenken scheint mir die Konstruktion recht kompliziert. 
+Vielleicht k?\195?\182nnen wir ToolTips verwenden, um den Anwendern die Bedeutung der Icons anzuzeigen?
+
+Tanja
+
+Modified: trunk/Posemuckel/doc/userdoc/LEDs.htm
+===================================================================
+--- trunk/Posemuckel/doc/userdoc/LEDs.htm	2006-04-02 15:54:52 UTC (rev 31)
++++ trunk/Posemuckel/doc/userdoc/LEDs.htm	2006-04-09 15:42:55 UTC (rev 32)
+@@ -13,55 +13,76 @@
+     </P>
+     <H3>Bedeutung der LEDs</H3>
+     <P>
+-      Die LED vor dem Benutzernamen kann verschiedene Zust?nde annehmen:
++      Die LED vor dem Benutzernamen kann verschiedene Zust?nde annehmen, die
++      den Onlinestatus des Benutzers wiederspiegeln.
+     </P>
+     <TABLE border="1" cellpadding="10">
+       <TR>
+-        <TD>
++        <TD>
++           
+         </TD>
+         <TD>
+           Farbe: grau
+         </TD>
+         <TD>
+           Farbe: gr?n
+-        </TD>
++        </TD>
++        <TD>
++          Farbe: rot
++        </TD> 
+       </TR>
+       <TR>
+         <TD>
+           ohne Markierung:
+         </TD>
+         <TD>
+-          offline
++          unbekannt
+         </TD>
+         <TD>
+           online
+-        </TD>
++        </TD>
++                <TD>
++          offline
++        </TD>
++ 
+       </TR>
+       <TR>
+         <TD>
+           Markierung:
+-          <B>P</B>
++          <B>P</B> (Projekt)
+         </TD>
+         <TD>
+           -----
+         </TD>
+         <TD>
+-          online und in einem Projekt
+-        </TD>
++          online und zur Zeit im gleichen Projekt t?tig wie Sie
++        </TD>
++        <td>
++	        ----
++        </td>
+       </TR>
+       <TR>
+         <TD>
+           Markierung:
+           <B>?</B>
+-        </TD>
+         <TD>
+           Online-Status unbekannt
+         </TD>
+         <TD>
+           -----
+-        </TD>
+-      </TR>
+-    </TABLE>
++        </TD>
++        <td>----</td>
++      </TR>
++      <tr>
++      <td>Steht der Benutzer auf der Buddyliste?</td>
++      <td>nein</td>
++      <td>ohne P: ja; sonst unbekannt</td>
++      <td>ja</td>
++      </tr>
++    </TABLE>
++    <p>Eine Markierung wird nur dann verwendet, wenn Sie ein Projekt ge?ffnet haben
++    und der Benutzer im gleichen Projekt Mitglied ist.
++    </p>
+     <P>
+       <A href=index.htm>Zur?ck zur ?bersicht</A>
+     </P>
+
+
+
+From tabu at berlios.de  Sun Apr  9 17:44:28 2006
+From: tabu at berlios.de (tabu at berlios.de)
+Date: Sun, 9 Apr 2006 17:44:28 +0200
+Subject: [Posemuckel-svn] r33 - trunk/Posemuckel/src/posemuckel
+Message-ID: <200604091544.k39FiSgY025634@sheep.berlios.de>
+
+Author: tabu
+Date: 2006-04-09 17:44:16 +0200 (Sun, 09 Apr 2006)
+New Revision: 33
+
+Modified:
+   trunk/Posemuckel/src/posemuckel/AllClientModelTests.java
+   trunk/Posemuckel/src/posemuckel/AllTests.java
+   trunk/Posemuckel/src/posemuckel/AllTestsOnRunningServer.java
+Log:
+Habe ein paar Kommentare hinzugef?\195?\188gt
+
+tanja
+
+Modified: trunk/Posemuckel/src/posemuckel/AllClientModelTests.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/AllClientModelTests.java	2006-04-09 15:42:55 UTC (rev 32)
++++ trunk/Posemuckel/src/posemuckel/AllClientModelTests.java	2006-04-09 15:44:16 UTC (rev 33)
+@@ -21,7 +21,12 @@
+  *
+  */
+ public class AllClientModelTests {
+-
++	
++	/**
++	 * Erstellt einen JUnit-Test zum Testen der Funktionalit?t
++	 * des Clients
++	 * @return Test f?r die Client-Funktionen
++	 */
+ 	public static Test suite() {
+ 		TestSuite suite = new TestSuite("Test for posemuckel");
+ 		//$JUnit-BEGIN$
+
+Modified: trunk/Posemuckel/src/posemuckel/AllTests.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/AllTests.java	2006-04-09 15:42:55 UTC (rev 32)
++++ trunk/Posemuckel/src/posemuckel/AllTests.java	2006-04-09 15:44:16 UTC (rev 33)
+@@ -24,6 +24,12 @@
+  */
+ public class AllTests {
+ 	
++	/**
++	 * Erstellt einen JUnit-Test mit allen Tests, die keinen laufenden
++	 * Server ben?tigen.
++	 * 
++	 * @return Test, der keinen Server ben?tigt
++	 */
+ 	public static Test suite() {
+ 		BasicConfigurator.configure();
+ 		TestSuite suite = new TestSuite("Test for posemuckel");
+
+Modified: trunk/Posemuckel/src/posemuckel/AllTestsOnRunningServer.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/AllTestsOnRunningServer.java	2006-04-09 15:42:55 UTC (rev 32)
++++ trunk/Posemuckel/src/posemuckel/AllTestsOnRunningServer.java	2006-04-09 15:44:16 UTC (rev 33)
+@@ -7,7 +7,7 @@
+ import posemuckel.server.ServerStop;
+ 
+ /**
+- * hier werden alle Tests eingetragen, die &uuml;ber localhost auf den 
++ * Hier werden alle Tests eingetragen, die &uuml;ber localhost auf den 
+  * Server zugreifen; der Server wird zu Beginn in einem Thread gestartet
+  * und am Ende der Testsuite wieder gestoppt. Die Reihenfolge der Tests kann
+  * nur bedingt ge?ndert werden: das Starten und Stoppen des Server sollte nicht
+@@ -37,7 +37,13 @@
+  *
+  */
+ public class AllTestsOnRunningServer {
+-
++	
++	/**
++	 * Erstellt einen JUnit-Test mit allen Tests, die einen laufenden
++	 * Server ben?tigen.
++	 * 
++	 * @return Test, der einen laufenden Server ben?tigt
++	 */
+ 	public static Test suite() {
+ 		TestSuite suite = new TestSuite("Test for posemuckel");
+ 		//$JUnit-BEGIN$
+
+
+
+From tabu at berlios.de  Sun Apr  9 19:02:43 2006
+From: tabu at berlios.de (tabu at berlios.de)
+Date: Sun, 9 Apr 2006 19:02:43 +0200
+Subject: [Posemuckel-svn] r34 - in trunk/Posemuckel/src/posemuckel/client/model: . event
+Message-ID: <200604091702.k39H2hms020272@sheep.berlios.de>
+
+Author: tabu
+Date: 2006-04-09 19:02:14 +0200 (Sun, 09 Apr 2006)
+New Revision: 34
+
+Added:
+   trunk/Posemuckel/src/posemuckel/client/model/OpenProjectExtension.java
+Modified:
+   trunk/Posemuckel/src/posemuckel/client/model/DecodeImage.java
+   trunk/Posemuckel/src/posemuckel/client/model/Model.java
+   trunk/Posemuckel/src/posemuckel/client/model/Project.java
+   trunk/Posemuckel/src/posemuckel/client/model/ProjectTask.java
+   trunk/Posemuckel/src/posemuckel/client/model/event/NotifyEvent.java
+Log:
+Habe den Bezeichner spaces durch seats ersetzt, soweit wie mir das aufgefallen war.
+
+Habe au?\195?\159erdem angefangen, aus der Klasse Project die Klasse OpenProject abzuleiten.
+OpenProjectExtension ist ein Hilfskonstrukt, um die Methoden und Datenfelder aus Project
+auszulagen. Der Commit erfolgt, weil ich heute keine Zeit mehr habe, an der Migration 
+weiterzuarbeiten
+
+tanja
+
+Modified: trunk/Posemuckel/src/posemuckel/client/model/DecodeImage.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/DecodeImage.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/DecodeImage.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -2,14 +2,12 @@
+ 
+ import java.io.ByteArrayInputStream;
+ import java.io.UnsupportedEncodingException;
+-import java.util.ArrayList;
+ 
+ import org.apache.commons.codec.binary.Base64;
+ import org.eclipse.swt.graphics.ImageData;
+ import org.eclipse.swt.graphics.ImageLoader;
+ 
+ import posemuckel.client.model.event.NotifyEvent;
+-import posemuckel.client.model.event.NotifyListener;
+ 	
+ 	/**
+ 	 * Diese Klasse dient einzig und allein der Decodierung
+@@ -56,13 +54,11 @@
+ 				ImageData[] imgdata = imageLoader.data;
+ 				NotifyEvent ne = new NotifyEvent(user, url, title, comment, imgdata[0]);
+ 				Project proj = Model.getModel().getOpenProject();
+-				ArrayList<NotifyListener> listener = proj.getListener();
+-				for (NotifyListener notifyListener : listener) {
+-					notifyListener.notify(ne);
+-				}
++				proj.fireNotifyEvent(ne);
+ 			} catch (UnsupportedEncodingException e) {
+ 				e.printStackTrace();
+ 			}
+ 		}
++		
+ 	}
+ 
+
+Modified: trunk/Posemuckel/src/posemuckel/client/model/Model.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/Model.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/Model.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -228,13 +228,13 @@
+ 		Project invitation = user.getInvitations().getProject(projectID);
+ 		//Projektdaten ?ndern
+ 		if(project != null) {
+-			project.changeFreeSpaces(change);
++			project.changeFreeSeats(change);
+ 		}		
+ 		if(userProject != null && userProject != project) {
+-			userProject.changeFreeSpaces(change);
++			userProject.changeFreeSeats(change);
+ 		}		
+ 		if(invitation != null && invitation != project && invitation != userProject) {
+-			invitation.changeFreeSpaces(change);
++			invitation.changeFreeSeats(change);
+ 		}
+ 		//Listener benachrichtigen
+ 		getAllProjects().fireElementChanged(project, true);
+
+Added: trunk/Posemuckel/src/posemuckel/client/model/OpenProjectExtension.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/OpenProjectExtension.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/OpenProjectExtension.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -0,0 +1,221 @@
++/**
++ * 
++ */
++package posemuckel.client.model;
++
++import java.util.ArrayList;
++
++import posemuckel.client.model.event.ListenerManagment;
++import posemuckel.client.model.event.NotifyListener;
++
++/**
++ * Die OpenProjectExtension enth?lt die Attribute und die Funktionalit?t,
++ * die f?r ein ge?ffnetes Projekt ben?tigt werden. Da das Projekt zwar beim
++ * ?ffnen seinen Zustand ?ndert, aber ansonsten im Wesentlichen das gleiche Objekt
++ * bleibt, wird die OpenProjectExtension als komplexes Attribut eines Project
++ * verwendet.
++ * 
++ * @author Posemuckel Team
++ *
++ */
++public class OpenProjectExtension {
++	
++	private Webtrace webtrace;
++	private String currentURL = "";
++	private String previousURL = "";
++	private String urlTitle = "";
++	private boolean useViewing;
++	private String[] notifydata;
++	//TODO ListenerManagment ?bernehmen
++	private ListenerManagment<NotifyListener> listenerManagment;
++	private FollowMeManager followMe;
++	
++	private Project project;
++	
++	public OpenProjectExtension(Project basis) {
++		project = basis;
++	}
++	/**
++	 * Gibt den Webtrace des Projektes aus. Idealerweise sollte nur f&uuml;r 
++	 * das ge?ffnete Projekt ein Webtrace vorhanden sein.
++	 * 
++	 * @return der Webtrace des Projektes
++	 */
++	public Webtrace getWebtrace() {
++		if(webtrace == null) {
++			//TODO Webtrace mit der Extension arbeiten lassen?
++			webtrace = new Webtrace(project);
++			String[] names = project.getMembers();
++			for (String name : names) {
++				webtrace.addUser(name);
++			}
++		}
++		return webtrace;
++	}
++	
++	/**
++	 * Setzt die URL, die der Anwender gerade besucht.
++	 * @param url , die der Anwender gerade besucht
++	 */
++	public void setCurrentURL(String url){
++		currentURL = url;
++	}
++	
++	/**
++	 * Gibt die zuletzt besuchte URL aus.
++	 * @return zuletzt besuchte URL
++	 */
++	public String getCurrentURL(){
++		return currentURL;
++	}
++
++	/**
++	 * Setzt die URL, die der Anwender vor der aktuellen URL besucht hat.
++	 * @param url 
++	 */
++	public void setPreviousURL(String url){
++		previousURL = url;
++	}
++
++	/**
++	 * Gibt die vorletzte besuchte URL von diesem Projekt aus.
++	 * @return vorletzte besuchte URL
++	 */
++	public String getPreviousURL(){
++		return previousURL;
++	}
++	
++	/**
++	 * Setzt den Titel der zuletzt besuchten Webseite.
++	 * @param title der zuletzt besuchten Webseite
++	 */
++	public void setUrlTitle(String title){
++		urlTitle =title;
++	}
++	
++	/**
++	 * Gibt den Titel der zuletzt besuchten Webseite aus.
++	 * @return Titel der zuletzt besuchten Webseite
++	 */
++	public String getUrlTitle(){
++		return urlTitle;
++	}
++	
++	/**
++	 * Teilt dem Projekt mit, dass der Browser vom Anwender gezwungen wird, zu einer 
++	 * URL zu springen. Das kann durch Setzen einer URL in der Adresszeile, ?ber den
++	 * Webtrace oder durch andere Buttons geschehen.
++	 * @param url , zu der gesprungen wird
++	 */
++	public void jumpToURL(String url) {
++		if(getWebtrace().getPageForUrl(url, getModel().getUser().getNickname()) == null) {
++			//der Anwender hat die Seite noch nicht besucht, also eine neue Wurzel
++			setCurrentURL("");
++		} else {
++			//der Anwender kennt die Seite schon
++			useViewing = true;
++			setCurrentURL("");
++		}
++	}
++	
++	/**
++	 * Teilt dem Projekt mit, dass nach M?glichkeit eine Viewing-Nachricht anstelle
++	 * einer Visiting-Nachricht verwendet werden soll, wenn die n?chste URL an
++	 * die Database versendet werden soll. Es ist nicht m?glich, eine
++	 * Viewing-Nachricht zu verwenden, wenn der Anwender die URL noch nicht
++	 * besucht hat.
++	 *
++	 */
++	public void useViewing() {
++		setCurrentURL("");
++		useViewing = true;
++	}
++	
++	/**
++	 * Gibt den FollowMeManager des Projektes aus. Der FollowMeManager sollte nur 
++	 * f?r ge?ffnete Projekte verwendet werden.
++	 * @return FollowMeManager
++	 */
++	public FollowMeManager getFollowMeManager()  {
++		if(followMe == null) {
++			followMe = new FollowMeManager(getModel().getLogchat(),
++					getModel().getUser().getNickname());
++		}
++		return followMe;
++	}
++	
++	/**
++	 * Sendet eine Visiting- oder eine Viewing-Nachricht an die Database.
++	 *
++	 */
++	public void visiting() {
++		//wenn die URLs gleich sind, wird visiting nicht ausgef?hrt
++		boolean doit = !getCurrentURL().equals(getPreviousURL());
++		if(doit) {
++			//wenn der Webtrace beide URLs f?r den Anwender 
++			//schon gespeichert hat, wird visiting nicht ausgef?hrt 
++			//das hat vor allem Einfluss auf den Back-und Forward-Button
++			doit = !webtrace.hasURL(getModel().getUser().getNickname(), getCurrentURL(), getPreviousURL());
++		}
++		//darf nur verwendet werden, wenn die URL auch tats?chlich benutzt wurde
++		if(useViewing) {
++			useViewing = (null != webtrace.getPageForUrl(
++					getCurrentURL(),getModel().getUser().getNickname()));
++		}
++		if(doit && !useViewing) {
++			new ProjectTask(getModel().getUser().getProjects(), project).execute(ProjectTask.VISITING);		
++		} else if(getModel().getUser().getURL() != getCurrentURL()){
++			//die Anzeige im Browser wurde ge?ndert
++			useViewing = false;
++			new WebTraceTask(getWebtrace()).execute(WebTraceTask.VIEWING);
++		}
++	}
++	
++	private Model getModel() {
++		return project.getModel();
++	}
++	/**
++	 * Holt die Daten f?r die Natifikation.
++	 * 
++	 * @return Die Notifikationsdaten als String-Array.
++	 */
++	public String[] getNotify() {
++		return notifydata;
++	}
++	public void notify(String url, String title, String comment, String datalen, String imagedata, String[] user) {
++		notifydata = new String[user.length+5];
++		notifydata[0] = url;
++		notifydata[1] = title;
++		notifydata[2] = comment;
++		notifydata[3] = datalen;
++		notifydata[4] = imagedata;
++		for (int i=5; i < notifydata.length; i++)
++			notifydata[i] = user[i-5];
++	
++		new ProjectTask(null, project).execute(ProjectTask.NOTIFY);
++	}
++	/**
++	 * Informiert die Listener, dass eine Notify-Nachricht von der Database an die
++	 * Empf?nger weitergeleitet wurde.
++	 * @param project TODO
++	 *
++	 */
++	protected void fireNotifyConfirmation() {
++		ArrayList<NotifyListener> listener = project.getListener();
++		for (NotifyListener notifyListener : listener) {
++			notifyListener.ack();
++		}
++	}
++	/**
++	 * Informiert die Listener, dass der Anwender eine neue URL angeklickt hat.
++	 * @param url die neue URL
++	 */
++	public void fireNewURL(String url) {
++		//TODO warum sollte das ?ber den NotifyListener laufen?
++		ArrayList<NotifyListener> listener = project.getListener();		
++		for (NotifyListener notifyListener : listener) {
++			notifyListener.newurl(url);
++		}
++	}
++
++}
+
+Modified: trunk/Posemuckel/src/posemuckel/client/model/Project.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/Project.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/Project.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -6,6 +6,7 @@
+ import java.util.ArrayList;
+ 
+ import posemuckel.client.model.event.ListenerManagment;
++import posemuckel.client.model.event.NotifyEvent;
+ import posemuckel.client.model.event.NotifyListener;
+ 
+ 
+@@ -23,7 +24,6 @@
+  */
+ public class Project {
+ 	//TODO den Teil zum ge?ffneten Projekt in eine separate Klasse verschieben?
+-	//TODO fire
+ 	public static final String PUBLIC_TYPE = "1";
+ 	public static final String PRIVATE_TYPE = "0";
+ 	
+@@ -42,7 +42,7 @@
+ 	private MemberList members;
+ 	private Model model;
+ 	private String freeSeats;
+-	private String spaces;
++	private String seats;
+ 	private String chatID;
+ 	private String date;
+ 	private boolean open;
+@@ -50,15 +50,9 @@
+ 	/**
+ 	 * nur f?r ge?ffnete Projekte relevant
+ 	 */
++	private OpenProjectExtension openExt;
+ 	
+-	private Webtrace webtrace;
+-	private String currentURL = "";
+-	private String previousURL = "";
+-	private String urlTitle = "";
+-	private boolean useViewing;
+-	private String[] notifydata;
+ 	private ListenerManagment<NotifyListener> listenerManagment;
+-	private FollowMeManager followMe;
+ 	
+ 	/**
+ 	 * Erstellt ein neues Projekt. Diese Methode sollte nur verwendet werden, 
+@@ -86,7 +80,7 @@
+ 	 * @return Die Notifikationsdaten als String-Array.
+ 	 */
+ 	public String[] getNotify() {
+-		return notifydata;
++		return openExt.getNotify();
+ 	}
+ 	
+ 	/**
+@@ -107,14 +101,7 @@
+ 	 * @return der Webtrace des Projektes
+ 	 */
+ 	public Webtrace getWebtrace() {
+-		if(webtrace == null) {
+-			webtrace = new Webtrace(this);
+-			String[] names = members.getNicknames();
+-			for (String name : names) {
+-				webtrace.addUser(name);
+-			}
+-		}
+-		return webtrace;
++		return openExt.getWebtrace();
+ 	}
+ 	
+ 	/**
+@@ -144,7 +131,7 @@
+ 		this.topic = topic;
+ 		this.owner = owner;
+ 		this.freeSeats = freeSeats;
+-		this.spaces = spaces;
++		this.seats = spaces;
+ 		this.description = description;
+ 		this.ispublic = isPublic;
+ 		this.date = date;
+@@ -187,7 +174,7 @@
+ 		this.topic = topic;
+ 		this.owner = owner;
+ 		this.freeSeats = freeSeats;
+-		this.spaces = spaces;
++		this.seats = spaces;
+ 		this.description = description;
+ 		this.ispublic = isPublic;		
+ 	}
+@@ -198,7 +185,7 @@
+ 	 * @param max maximale Teilnehmerzahl
+ 	 */
+ 	public void setMaxNumber(int max) {
+-		this.spaces = String.valueOf(max);
++		this.seats = String.valueOf(max);
+ 	}
+ 	
+ 	/**
+@@ -264,7 +251,7 @@
+ 	 * @return Zahl der Pl&auml;tze
+ 	 */
+ 	public String getMaxNumber() {
+-		return spaces;
++		return seats;
+ 	}
+ 
+ 	/**
+@@ -356,7 +343,7 @@
+ 	 * &Auml;ndert die Zahl der freien Pl&auml;tze im Projekt.
+ 	 * @param change Anstieg oder Verringerung der Zahl der freien Pl?tze
+ 	 */
+-	protected void changeFreeSpaces(int change) {
++	protected void changeFreeSeats(int change) {
+ 		int oldValue = new Integer(freeSeats).intValue();
+ 		oldValue = oldValue + change;
+ 		freeSeats = String.valueOf(oldValue);
+@@ -368,6 +355,7 @@
+ 	 */
+ 	void setOpen(String chatID) {
+ 		open = true;
++		openExt = new OpenProjectExtension(this);
+ 		this.chatID = chatID;
+ 	}
+ 	
+@@ -400,7 +388,7 @@
+ 	 * @param url , die der Anwender gerade besucht
+ 	 */
+ 	public void setCurrentURL(String url){
+-		currentURL = url;
++		openExt.setCurrentURL(url);
+ 	}
+ 	
+ 	/**
+@@ -408,7 +396,7 @@
+ 	 * @param url 
+ 	 */
+ 	public void setPreviousURL(String url){
+-		previousURL = url;
++		openExt.setPreviousURL(url);
+ 	}
+ 	
+ 	/**
+@@ -418,30 +406,15 @@
+ 	 * @param url , zu der gesprungen wird
+ 	 */
+ 	public void jumpToURL(String url) {
+-		if(getWebtrace().getPageForUrl(url, model.getUser().getNickname()) == null) {
+-			//der Anwender hat die Seite noch nicht besucht, also eine neue Wurzel
+-			setCurrentURL("");
+-		} else {
+-			//der Anwender kennt die Seite schon
+-			useViewing = true;
+-			setCurrentURL("");
+-		}
++		openExt.jumpToURL(url);
+ 	}
+ 	
+ 	/**
+-	 * Setzt den Titel der zuletzt besuchten Webseite.
+-	 * @param title der zuletzt besuchten Webseite
+-	 */
+-	public void setUrlTitle(String title){
+-		urlTitle =title;
+-	}
+-	
+-	/**
+ 	 * Gibt die zuletzt besuchte URL aus.
+ 	 * @return zuletzt besuchte URL
+ 	 */
+ 	public String getCurrentURL(){
+-		return currentURL;
++		return openExt.getCurrentURL();
+ 	}
+ 	
+ 	/**
+@@ -449,42 +422,29 @@
+ 	 * @return vorletzte besuchte URL
+ 	 */
+ 	public String getPreviousURL(){
+-		return previousURL;
++		return openExt.getPreviousURL();
+ 	}
+ 	
+-	/**
+-	 * Gibt den Titel der zuletzt besuchten Webseite aus.
+-	 * @return Titel der zuletzt besuchten Webseite
++	/* (non-Javadoc)
++	 * @see posemuckel.client.model.OpenProjectExtension#getUrlTitle()
+ 	 */
+-	public String getUrlTitle(){
+-		return urlTitle;
++	public String getUrlTitle() {
++		return openExt.getUrlTitle();
+ 	}
+-	
++
++	/* (non-Javadoc)
++	 * @see posemuckel.client.model.OpenProjectExtension#setUrlTitle(java.lang.String)
++	 */
++	public void setUrlTitle(String title) {
++		openExt.setUrlTitle(title);
++	}
++
+ 	/**
+ 	 * Sendet eine Visiting- oder eine Viewing-Nachricht an die Database.
+ 	 *
+ 	 */
+ 	public void visiting() {
+-		//wenn die URLs gleich sind, wird visiting nicht ausgef?hrt
+-		boolean doit = !getCurrentURL().equals(getPreviousURL());
+-		if(doit) {
+-			//wenn der Webtrace beide URLs f?r den Anwender 
+-			//schon gespeichert hat, wird visiting nicht ausgef?hrt 
+-			//das hat vor allem Einfluss auf den Back-und Forward-Button
+-			doit = !webtrace.hasURL(model.getUser().getNickname(), getCurrentURL(), getPreviousURL());
+-		}
+-		//darf nur verwendet werden, wenn die URL auch tats?chlich benutzt wurde
+-		if(useViewing) {
+-			useViewing = (null != webtrace.getPageForUrl(
+-					getCurrentURL(),model.getUser().getNickname()));
+-		}
+-		if(doit && !useViewing) {
+-			new ProjectTask(model.getUser().getProjects(), this).execute(ProjectTask.VISITING);		
+-		} else if(getModel().getUser().getURL() != getCurrentURL()){
+-			//die Anzeige im Browser wurde ge?ndert
+-			useViewing = false;
+-			new WebTraceTask(getWebtrace()).execute(WebTraceTask.VIEWING);
+-		}
++		openExt.visiting();
+ 	}
+ 	
+ 	/**
+@@ -496,35 +456,36 @@
+ 	 *
+ 	 */
+ 	public void useViewing() {
+-		setCurrentURL("");
+-		useViewing = true;
++		openExt.useViewing();
+ 	}
+ 
+ 	public void notify(String url, String title, String comment, String datalen, String imagedata, String[] user) {
+-		this.notifydata = new String[user.length+5];
+-		notifydata[0] = url;
+-		notifydata[1] = title;
+-		notifydata[2] = comment;
+-		notifydata[3] = datalen;
+-		notifydata[4] = imagedata;
+-		for (int i=5; i < notifydata.length; i++)
+-			notifydata[i] = user[i-5];
++		openExt.notify(url, title, comment, datalen, imagedata, user);
++	}
+ 	
+-		new ProjectTask(null, this).execute(ProjectTask.NOTIFY);
++	/**
++	 * Informiert die Listener, dass eine Notify-Nachricht von der Database an die
++	 * Empf?nger weitergeleitet wurde.
++	 *
++	 */
++	protected void fireNotifyConfirmation() {
++		openExt.fireNotifyConfirmation();
+ 	}
+ 	
+-	protected void confirmNotify() {
+-		ArrayList<NotifyListener> listener = getListener();
+-		for (NotifyListener notifyListener : listener) {
+-			notifyListener.ack();
+-		}
++	/**
++	 * Informiert die Listener, dass der Anwender eine neue URL angeklickt hat.
++	 * @param url die neue URL
++	 */
++	public void fireNewURL(String url) {
++		openExt.fireNewURL(url);
+ 	}
+ 	
+-	public void newURL(String url) {
+-		ArrayList<NotifyListener> listener = getListener();		
+-		for (NotifyListener notifyListener : listener) {
+-			notifyListener.newurl(url);
+-		}
++	/**
++	 * Informiert die Listener ?ber ein neues NotifyEvent.
++	 * @param event das NotifyEvent
++	 */
++	public void fireNotifyEvent(NotifyEvent event) {
++		event.fireNotifyEvent(this);
+ 	}
+ 	
+ 	/**
+@@ -533,10 +494,7 @@
+ 	 * @return FollowMeManager
+ 	 */
+ 	public FollowMeManager getFollowMeManager()  {
+-		if(followMe == null) {
+-			followMe = new FollowMeManager(model.getLogchat(), model.getUser().getNickname());
+-		}
+-		return followMe;
++		return openExt.getFollowMeManager();
+ 	}
+ 	
+ 	/**
+
+Modified: trunk/Posemuckel/src/posemuckel/client/model/ProjectTask.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/ProjectTask.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/ProjectTask.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -144,7 +144,7 @@
+ 			projects.confirmDelProject(project);
+ 			break;
+ 		case Database.ACK + NOTIFY:
+-			project.confirmNotify();
++			project.fireNotifyConfirmation();
+ 			break;
+ 		default:
+ 			break;
+
+Modified: trunk/Posemuckel/src/posemuckel/client/model/event/NotifyEvent.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/model/event/NotifyEvent.java	2006-04-09 15:44:16 UTC (rev 33)
++++ trunk/Posemuckel/src/posemuckel/client/model/event/NotifyEvent.java	2006-04-09 17:02:14 UTC (rev 34)
+@@ -1,8 +1,12 @@
+ package posemuckel.client.model.event;
+ 
++import java.util.ArrayList;
++
+ import org.eclipse.swt.graphics.ImageData;
+ 
++import posemuckel.client.model.Project;
+ 
++
+ /**
+  * Dieses Event dient der hochhalten-Funktion.
+  * Hier werden die entsprechenden Daten drin geseichert.
+@@ -45,4 +49,15 @@
+ 	public ImageData getImageData() {
+ 		return imagedata;
+ 	}
++
++	/**
++	 * Informiert die Listener ?ber ein neues NotifyEvent.
++	 * @param project TODO
++	 */
++	public void fireNotifyEvent(Project project) {
++		ArrayList<NotifyListener> listener = project.getListener();
++		for (NotifyListener notifyListener : listener) {
++			notifyListener.notify(this);
++		}
++	}
+ }
+
+
+
+From tabu at berlios.de  Sun Apr  9 19:04:19 2006
+From: tabu at berlios.de (tabu at berlios.de)
+Date: Sun, 9 Apr 2006 19:04:19 +0200
+Subject: [Posemuckel-svn] r35 - trunk/Posemuckel/src/posemuckel/client/gui
+Message-ID: <200604091704.k39H4JGQ020383@sheep.berlios.de>
+
+Author: tabu
+Date: 2006-04-09 19:04:09 +0200 (Sun, 09 Apr 2006)
+New Revision: 35
+
+Modified:
+   trunk/Posemuckel/src/posemuckel/client/gui/NotificationDialog.java
+Log:
+habe die Benachrichtigungsmethoden der Listener der 
+Klasse Project mit dem Pr?\195?\164fix fire ausgestattet.
+
+tanja
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/NotificationDialog.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/NotificationDialog.java	2006-04-09 17:02:14 UTC (rev 34)
++++ trunk/Posemuckel/src/posemuckel/client/gui/NotificationDialog.java	2006-04-09 17:04:09 UTC (rev 35)
+@@ -81,7 +81,7 @@
+ 			public void mouseDoubleClick(MouseEvent arg0) {}
+ 			public void mouseUp(MouseEvent arg0) {
+ 				Project proj = Model.getModel().getOpenProject();
+-				proj.newURL(url);
++				proj.fireNewURL(url);
+ 			}
+ 		});
+ 		
+
+
+

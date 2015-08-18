@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Posemuckel-svn] r28 - trunk/Posemuckel/src/posemuckel/server
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/posemuckel-svn/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r28%20-%20trunk/Posemuckel/src/posemuckel/server&In-Reply-To=%3C200603261800.k2QI0weB024959%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000001.html">
+   <LINK REL="Next"  HREF="000003.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Posemuckel-svn] r28 - trunk/Posemuckel/src/posemuckel/server</H1>
+    <B>papa_pasta at BerliOS</B> 
+    <A HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r28%20-%20trunk/Posemuckel/src/posemuckel/server&In-Reply-To=%3C200603261800.k2QI0weB024959%40sheep.berlios.de%3E"
+       TITLE="[Posemuckel-svn] r28 - trunk/Posemuckel/src/posemuckel/server">papa_pasta at berlios.de
+       </A><BR>
+    <I>Sun Mar 26 20:00:58 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000001.html">[Posemuckel-svn] r26 - in trunk/Posemuckel: build-dist lib
+</A></li>
+        <LI>Next message: <A HREF="000003.html">[Posemuckel-svn] r29 - in trunk/Posemuckel/src/posemuckel: client/gui lang
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: papa_pasta
+Date: 2006-03-26 20:00:50 +0200 (Sun, 26 Mar 2006)
+New Revision: 28
+
+Modified:
+   trunk/Posemuckel/src/posemuckel/server/ClientMessage.java
+   trunk/Posemuckel/src/posemuckel/server/DB.java
+Log:
+[ Bug #6817 ] Doppelte Projekte
+
+Um dieses Problem zun?\195?\164chst rudiment?\195?\164r zu l?\195?\182sen, habe ich erstmal
+im Server bei der Verarbeitung der START_PROJECT Nachricht eine
+DB-Abfrage eingebaut, ob ein Projekt mit dem angegebenen Namen
+schon existiert. Wenn ja, wird eine ERROR-Nachricht geschickt
+und das Projekt nicht angelegt.
+
+Diese L?\195?\182sung ist nat?\195?\188rlich erstmal nur ein hotfix.
+Sie ist unbefriedigend, weil der User nur sieht, dass ein Fehler
+aufgetreten ist, nicht aber, warum sein Projekt nicht angelegt wurde.
+So oder so wird man wohl langfristig aussagekr?\195?\164ftigere Fehler-
+Nachrichten definieren m?\195?\188ssen. Ich k?\195?\182nnte mir vorstellen, dass
+der Server gleich mit der ERROR-Nachricht eine Beschreibung des
+aufgetretenen Fehlers mitschickt.
+
+Jens
+
+Modified: trunk/Posemuckel/src/posemuckel/server/ClientMessage.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/server/ClientMessage.java	2006-03-20 20:00:05 UTC (rev 27)
++++ trunk/Posemuckel/src/posemuckel/server/ClientMessage.java	2006-03-26 18:00:50 UTC (rev 28)
+@@ -175,6 +175,7 @@
+     		IOException, SQLException {
+ 	    boolean b = true;
+ 	    if (model.isLoggedIn(hash)) {
++	    	// Erstmal alles einlesen:
+ 	    	String user = model.getUser(hash);
+ 	    	String topic = in.readLine();
+ 	    	topic = GetText.escape_sql_write(topic);
+@@ -186,6 +187,24 @@
+ 		    String maxUsers = in.readLine();
+ 		    String description = in.readLine();
+ 	    	description = GetText.escape_sql_write(description);
++	   
++	    	// So, jetzt m&#252;ssen wir schauen, ob es so ein
++	    	// Projekt mit diesem Namen schon gibt.
++	    	try{
++	    		if(data.projectExists(topic)){
++	    			// Wenn ja, wird die Abarbeitung der Anfrage beendet.
++	    			servermess.error(thisclient,&quot;&quot;, id);
++	    			return true;
++	    		}
++	    	} catch(SQLException e) {
++	    		// Dieser catch-Block ist hier notwendig,
++	    		// weil nur hier die aktuelle Nachtichten-ID
++	    		// zur Verf&#252;gung steht.
++    			servermess.error(thisclient,&quot;&quot;, id);
++    			return true;
++	    	}
++	    	
++	    	// Alles klar, das Projekt kann angelegt werden:
+ 		    Integer c = new Integer(count);
+ 		    String[] userToInvite = GetText.escape_sql_write(parse(in,c.intValue()-4, &quot;START_PROJECT&quot;));
+ 		    int projectID = data.addProject(user, topic, isPrivate,
+
+Modified: trunk/Posemuckel/src/posemuckel/server/DB.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/server/DB.java	2006-03-20 20:00:05 UTC (rev 27)
++++ trunk/Posemuckel/src/posemuckel/server/DB.java	2006-03-26 18:00:50 UTC (rev 28)
+@@ -264,7 +264,6 @@
+ 	 */
+ 	public boolean existsUser(String name) throws SQLException{
+ 		String query = &quot;SELECT nickname FROM user WHERE nickname='&quot;+name+&quot;';&quot;;
+-		System.out.println(query);
+ 		dbresult = statement.executeQuery(query);
+ 		if(!dbresult.next()) {
+ 			return false;
+@@ -276,6 +275,24 @@
+ 	}
+ 
+ 	/**
++	 * Gibt an, ob es bereits ein Projekt mit dem angegebenen Namen gibt.
++	 * @param title Titel des Projektes
++	 * @return true, falls es schon ein Projekt mit diesem Namen gibt, false sonst
++	 * @throws SQLException
++	 */
++	public boolean projectExists(String title) throws SQLException{
++		String query = &quot;SELECT project_title FROM projects WHERE project_title='&quot;+title+&quot;';&quot;;
++		dbresult = statement.executeQuery(query);
++		if(!dbresult.next()) {
++			return false;
++		} else {
++			checkIP(dbresult.getString(&quot;project_title&quot;));
++	    }
++		connection.commit();	
++		return true;
++	}
++	
++	/**
+ 	 * F&#252;gt einen Chattext mit Zeitstempel in die Datenbank ein.
+ 	 * @param text der einzuf&#252;gende Text
+ 	 * @param user Benutzer, der den Text verfasst hat
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000001.html">[Posemuckel-svn] r26 - in trunk/Posemuckel: build-dist lib
+</A></li>
+	<LI>Next message: <A HREF="000003.html">[Posemuckel-svn] r29 - in trunk/Posemuckel/src/posemuckel: client/gui lang
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/posemuckel-svn">More information about the Posemuckel-svn
+mailing list</a><br>
+</body></html>

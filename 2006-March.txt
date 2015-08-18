@@ -1,0 +1,586 @@
+From tabu at berlios.de  Thu Mar 16 14:50:49 2006
+From: tabu at berlios.de (tabu at berlios.de)
+Date: Thu, 16 Mar 2006 14:50:49 +0100
+Subject: [Posemuckel-svn] r25 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer
+Message-ID: <200603161350.k2GDonbt021984@sheep.berlios.de>
+
+Author: tabu
+Date: 2006-03-16 14:50:08 +0100 (Thu, 16 Mar 2006)
+New Revision: 25
+
+Modified:
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java
+   trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/WebtraceTable.java
+Log:
+Wenn auf eine Webseite im FolderTree geklickt wird, werden die
+Angaben zur Bewertung unter der Tabelle mit den URLs angezeigt.
+Wenn im FolderTree keine Webseite selektiert wird, bleibt die
+vorherige Anzeige stehen. 
+
+Damit der Anwender weiss, f?\195?\188r welche URL gerade die Bewertungen
+angezeigt werden, wird der Titel der URL hinter dem Label
+'Einzelwertung' angezeigt.
+
+tanja
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java	2006-03-13 17:40:44 UTC (rev 24)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/RatingTable.java	2006-03-16 13:50:08 UTC (rev 25)
+@@ -47,6 +47,7 @@
+ 	private TableViewer tableViewer;
+ 	private Webpage input;
+ 	private Text description_widget;
++	private Label label_rating;
+ 	private MyListener listener;
+ 	private Model model;
+ 	
+@@ -64,8 +65,11 @@
+ 	
+ 	protected void setInput(Webpage page) {
+ 		if((page != null) && (tableViewer != null)) {
++			System.out.println("setLabel " + label_rating.getText());
+ 			tableViewer.setInput(page);
+ 			input = page;
++			label_rating.setText(
++					GetText.gettext("SINGLE_RATING") + ": " + page.getTitle());
+ 			model.getOpenProject().getWebtrace().loadNotes(page.getURL());
+ 		}
+ 	}
+@@ -78,10 +82,11 @@
+ 		Composite notesComp = new Composite(sash, SWT.NONE);
+ 		notesComp.setLayout(MyLayoutFactory.createGrid(1, false));
+ 		
+-		Label label_rating = new Label(ratingComp, SWT.SHADOW_NONE);
++		label_rating = new Label(ratingComp, SWT.SHADOW_NONE);
+ 		label_rating.setText(GetText.gettext("SINGLE_RATING"));	
+-		GridData data1 = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
++		GridData data1 = new GridData(GridData.FILL_HORIZONTAL);
+ 		data1.verticalSpan = 1;
++		//data1.grabExcessHorizontalSpace = true;
+ 		data1.horizontalSpan = 1;
+ 		label_rating.setLayoutData(data1);
+ 		
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java	2006-03-13 17:40:44 UTC (rev 24)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/ResultDialog.java	2006-03-16 13:50:08 UTC (rev 25)
+@@ -27,7 +27,6 @@
+ import org.eclipse.swt.widgets.Listener;
+ import org.eclipse.swt.widgets.Menu;
+ import org.eclipse.swt.widgets.Shell;
+-import org.eclipse.swt.widgets.Text;
+ import org.eclipse.swt.widgets.Tree;
+ import org.eclipse.swt.widgets.TreeItem;
+ 
+@@ -45,11 +44,11 @@
+ 
+ public class ResultDialog extends Dialog {
+ 
+-	private Text text_selection;
+ 	private TreeViewer resultsViewer;
+ 	private ResultsViewerLabelProvider labelProvider;
+ 	public static final int RATING = 100;
+ 	private Model model;
++	private RatingTable singleRating;
+ 	
+ 	public ResultDialog(Shell shell) {
+ 		super(shell);
+@@ -67,31 +66,19 @@
+ 		//layout.marginHeight = 2;
+ 		comp.setLayout(layout);
+ 		GridData layoutData = new GridData();
+-
+-		// ein read-only Textfeld zur Anzeige der Anmerkungen -> Select & Copy m?glich
+-		/* funzt irgendwie nicht richtig, daher erst mal deaktiviert
+-		 * Davon abgesehen sollten Bewertungne und Kommentare idealerweise 
+-		 * in den gleichen Feldern wie die der Tabelle eingeblendet werden
+-		 */
+-		//text_selection = new Text(comp, SWT.READ_ONLY | SWT.BORDER);
+-		//layoutData.horizontalSpan = 1;
+-		//layoutData.grabExcessHorizontalSpace = true;
+-		//layoutData.horizontalAlignment = GridData.FILL;
+-		//text_selection.setLayoutData(layoutData);
+-
+ 		// Create the tree viewer as a child of the composite comp
+ 		SashForm sash = new SashForm(comp, SWT.HORIZONTAL);
+ 		layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+ 		layoutData.minimumHeight=500;
+ 		layoutData.minimumWidth=800;
+ 		sash.setLayoutData(layoutData);
+-		addTable(sash);
++		singleRating = addTable(sash);
+ 		resultsViewer = new TreeViewer(sash);
+ 		resultsViewer.setContentProvider(new ResultsViewerContentProvider());
+ 		//labelProvider = new ResultsViewerLabelProvider();
+ 		labelProvider = new ResultsViewerLabelProvider(TreeIcons.getIcons());
+ 		resultsViewer.setLabelProvider(labelProvider);
+-		
++		addListeners();
+ 		resultsViewer.setUseHashlookup(true);
+ 		
+ 		// layout the tree viewer
+@@ -121,15 +108,22 @@
+ 		getShell().setImage(ImageManagment.getRegistry().get(ImageManagment.SHELL_ICON));
+ 		return comp;
+ 	}
+-	
+-		protected void addTable(Composite parent) {
++		
++	/**
++	 * Erzeugt die Tabelle zur Anzeige der URLs, die eine Mindestbewertung erhalten
++	 * haben. 
++	 * @param parent Composite, in dem die Tabelle angezeigt werden soll
++	 * @return RatingTable, in dem die Einzelwertungen angezeigt werden
++	 */
++		protected RatingTable addTable(Composite parent) {
+ 			Composite child = new Composite(parent, SWT.NONE);
+ 			child.setLayout(MyLayoutFactory.createGrid(1, true));
+ 			Composite tvComp = new Composite(child, SWT.NONE);
+ 			tvComp.setLayout(new FillLayout());	
+ 			tvComp.setLayoutData(getGridData());
+-			new WebtraceTable(tvComp, model.getOpenProject().getWebtrace(), model);
+-	
++			return new WebtraceTable(tvComp, 
++					model.getOpenProject().getWebtrace(), model).getRatingTable();
++			//die Instanz von RatingTable abfragen und zur?ckgeben			
+ 	}
+ 		
+ 		private GridData getGridData() {
+@@ -141,16 +135,19 @@
+ 
+ 	protected void addListeners() {
+ 		resultsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
++			//TODO an die Kommentare anschliessen
+ 			public void selectionChanged(SelectionChangedEvent event) {
+-				// if the selection is empty clear the label
++				// if the selection is empty do nothing
+ 				if(event.getSelection().isEmpty()) {
+-					text_selection.setText("");
+ 					return;
+ 				}
+ 				if(event.getSelection() instanceof IStructuredSelection) {
+ 					IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+ 					Object selected = (Root) selection.getFirstElement();
+-					text_selection.setText(labelProvider.getText(selected, RATING));
++					if(selected instanceof Webpage) {
++						singleRating.setInput((Webpage)selected);
++					}
++					//text_selection.setText(labelProvider.getText(selected, RATING));
+ 				}
+ 			}
+ 		});
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/WebtraceTable.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/WebtraceTable.java	2006-03-13 17:40:44 UTC (rev 24)
++++ trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer/WebtraceTable.java	2006-03-16 13:50:08 UTC (rev 25)
+@@ -123,6 +123,10 @@
+ 		return listener;
+ 	}
+ 	
++	protected RatingTable getRatingTable() {
++		return singleRating;
++	}
++	
+ 	/**
+ 	 * Stattet die Tabelle mit einem Filter aus, so dass nur Webseiten mit einer
+ 	 * Durchschnittswertung von mindestens 3 Punkten angezeigt werden.
+
+
+
+From papa_pasta at berlios.de  Sun Mar 19 18:46:30 2006
+From: papa_pasta at berlios.de (papa_pasta at BerliOS)
+Date: Sun, 19 Mar 2006 18:46:30 +0100
+Subject: [Posemuckel-svn] r26 - in trunk/Posemuckel: build-dist lib
+Message-ID: <200603191746.k2JHkU08002584@sheep.berlios.de>
+
+Author: papa_pasta
+Date: 2006-03-19 18:46:04 +0100 (Sun, 19 Mar 2006)
+New Revision: 26
+
+Added:
+   trunk/Posemuckel/build-dist/INSTALL-de-server.txt
+   trunk/Posemuckel/build-dist/INSTALL-server.txt
+Modified:
+   trunk/Posemuckel/build-dist/build.xml
+   trunk/Posemuckel/lib/3RD-PARTY-LICENSES.txt
+Log:
+Dem Ant build-file wurde das (zuvor auskommentierte) Target
+server-bin-zip hinzugef?\195?\188gt. Es erzeugt ein ZIP-Archiv, in dem
+das server-jar zusammen mit ein paar Doku-Teilen, PHP-Scripten,
+einer Besipiel-Konfiguration und einer knappen Installations-
+anleitung daher kommt.
+Die erzeugte Datei wird im Verzeichnins dist abgelegt.
+
+Ich bitte um Tests.
+
+Jens
+
+Added: trunk/Posemuckel/build-dist/INSTALL-de-server.txt
+===================================================================
+--- trunk/Posemuckel/build-dist/INSTALL-de-server.txt	2006-03-16 13:50:08 UTC (rev 25)
++++ trunk/Posemuckel/build-dist/INSTALL-de-server.txt	2006-03-19 17:46:04 UTC (rev 26)
+@@ -0,0 +1,22 @@
++So bringst du den Server zum Laufen:
++
++1. Installiere java 1.5, mysql, apache und php4. Daf?r kannst du auch XAMPP
++   nehmen. Wenn der Server auch Einladungen per Mail verschicken soll, ben?tigst
++   du noch einen MTA wie postfix oder so.
++
++2. Apache muss server/www als Wurzelverzeichnis nehmen und dort die
++   php4 Scripte ausf?hren. Das Verzeichnis doc muss auf doc in diesem Verzeichis hier
++   zeigen, wenn auf der Website auch Doku zu sehen sein soll. Eine besipielhafte
++   httpd.conf liegt in server/conf/.
++   
++3. F?r MySQL ben?tigst du einen Benutzer und ein Passwort f?r eine neue DB. Diese DB
++   kann dann wie folgt angelegt werden:
++   mysql -u [user] -p < server/db.sql
++
++4. Die Konfigurationsdatei posemuckel_server.cfg muss nun auch angepasst werden. Lies hierzu
++   bitte die Kommentare in der Datei. Wenn du z.B. einen MTA installiert hast, dann musst du
++   DO_SENDMAIL auf yes setzen und die Kommandozeile des Aufrufs zum Verschicken von Mails
++   anpassen.
++   
++5. Starte den Server wie folgt:
++   java -jar posemuckel-server-0.4.jar -c posemuckel_server.cfg
+\ No newline at end of file
+
+Added: trunk/Posemuckel/build-dist/INSTALL-server.txt
+===================================================================
+--- trunk/Posemuckel/build-dist/INSTALL-server.txt	2006-03-16 13:50:08 UTC (rev 25)
++++ trunk/Posemuckel/build-dist/INSTALL-server.txt	2006-03-19 17:46:04 UTC (rev 26)
+@@ -0,0 +1,22 @@
++To install and run the server, do this:
++
++1. Install java 1.5, mysql, apache and php4. You can use XAMPP, for example. If you want
++   your Server to send mail invitations to users, you will probably need
++   a mail transfer agent like postfix etc.
++
++2. Configure apache to use server/www as document root and to execute
++   php4 script files in this directory. Redirect doc to the doc directory,
++   if you want to present some documentation on the site. An example httpd.conf
++   file can be found in server/conf/.
++   
++3. Create a DB user for MySQL and create the posemuckel Database using server/db.sql.
++   For example like this:
++   mysql -u [user] -p < server/db.sql
++
++4. Edit the example posemuckel server configuration file named posemuckel_server.cfg.
++   If you have installed a mail transfer agent, then you schould set DO_SENDMAIL to yes
++   and configure the command line used.
++   
++5. Run the server using this command:
++   java -jar posemuckel-server-0.4.jar -c posemuckel_server.cfg
++   
+\ No newline at end of file
+
+Modified: trunk/Posemuckel/build-dist/build.xml
+===================================================================
+--- trunk/Posemuckel/build-dist/build.xml	2006-03-16 13:50:08 UTC (rev 25)
++++ trunk/Posemuckel/build-dist/build.xml	2006-03-19 17:46:04 UTC (rev 26)
+@@ -182,9 +182,9 @@
+ </target>	
+ 	
+ 	
+-<!--target name="server" description="generate the server jar" -->
++<target name="server" description="generate the server jar">
+ 		<!-- Erzeuge eine JAR-Datei f??r den Server -->
+-		<!--jar jarfile="../dist/posemuckel-server-0.4.jar">
++		<jar jarfile="../dist/posemuckel-server-0.4.jar">
+ 	    	<fileset dir="../bin">
+ 	    		<exclude name="posemuckel/client/**"/>
+ 	    		<exclude name="**/*Test*"/>
+@@ -199,42 +199,40 @@
+ 			 <attribute name="Class-Path" value="lib/log4j-1.2.12.jar lib/mysql-connector-java-3.1.11-bin.jar lib/java-getopt-1.0.12.jar"/>
+ 			</manifest>
+ 		</jar>
+-</target-->
++</target>
+ 	
+ <!--Server-
+-Das nachfolgende Target erzeugt ein mit Gzip komprimiertes Tar-Archiv.
+-Dieses Target l??uft nur unter Linux!
++Das nachfolgende Target erzeugt ein ZIP-Archiv.
+ 
+-Zun??chst wird aber erstmal ein JAR speziell f??r Linux erszeugt.
++Zun??chst wird aber erstmal ein JAR erzeugt.
+ Daf??r sorgt die Abh??ngigkeit dieses Targets.
+-
+-Das l??uft hier so ab:
+-2. l??sche das alte tgz-Archiv
+-3. stelle erstmal ein tar-Archiv zusammen
+-4. komprimiere das tar
+-5. l??sche ??berfl??ssige Dateien, damit von diesem Prozess nur das tgz ??brig bleibt
+ -->
+-<!--target name="server-bin-tgz" depends="server" description="generate the server linux distribution" >
+- 		<delete file="../dist/posemuckel-server-bin-0.4.tgz"/-->
++<target name="server-bin-zip" depends="server" description="generate the server linux distribution" >
++ 		<delete file="../dist/posemuckel-server-bin-0.4.zip"/>
+ 		<!-- Erzeuge eine Tar-Gzip-Datei mit dem Client drin -->
+-		<!--tar destfile="../dist/posemuckel-server-bin-0.4.tar">
+-			<tarfileset dir="." includes="LICENSE.txt" prefix="posemuckel-server-bin-0.4"/>
+-			<tarfileset dir="." includes="AUTHORS.txt" prefix="posemuckel-server-bin-0.4"/>
+-			<tarfileset dir="../dist" includes="posemuckel-server-0.4.jar" prefix="posemuckel-server-bin-0.4"/-->
++		<zip destfile="../dist/posemuckel-server-bin-0.4.zip">
++			<zipfileset dir="." includes="LICENSE.txt" prefix="posemuckel-server-bin-0.4"/>
++			<zipfileset dir="." includes="AUTHORS.txt" prefix="posemuckel-server-bin-0.4"/>
++			<zipfileset dir="." includes="README.txt" prefix="posemuckel-server-bin-0.4"/>
++			<zipfileset dir="." includes="INSTALL-server.txt" fullpath="posemuckel-server-bin-0.4/INSTALL.txt"/>
++			<zipfileset dir="." includes="INSTALL-de-server.txt" fullpath="posemuckel-server-bin-0.4/INSTALL-de.txt"/>
++			<zipfileset dir="../dist" includes="posemuckel-server-0.4.jar" prefix="posemuckel-server-bin-0.4"/>
++			<zipfileset file="../src/posemuckel/server/posemuckel_server.cfg" prefix="posemuckel-server-bin-0.4"/>
+ 			<!-- Das lib-Verzeichnis bef??llen -->
+-			<!--tarfileset dir="../lib" includes="log4j-1.2.12.jar" prefix="posemuckel-server-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="java-getopt-1.0.12.jar" prefix="posemuckel-server-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="mysql-connector-java-3.1.11-bin.jar" prefix="posemuckel-server-bin-0.4/lib"/>				
+-			<tarfileset dir="../lib" includes="3RD-PARTY-LICENSES.txt" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="Apache-License.txt" prefix="posemuckel-client-bin-0.4/lib"/>
+-			<tarfileset dir="../lib" includes="Common-Public-License.txt" prefix="posemuckel-client-bin-0.4/lib"/-->
++			<zipfileset dir="../lib" includes="log4j-1.2.12.jar" prefix="posemuckel-server-bin-0.4/lib"/>
++			<zipfileset dir="../lib" includes="java-getopt-1.0.12.jar" prefix="posemuckel-server-bin-0.4/lib"/>
++			<zipfileset dir="../lib" includes="mysql-connector-java-3.1.11-bin.jar" prefix="posemuckel-server-bin-0.4/lib"/>				
++			<zipfileset dir="../lib" includes="3RD-PARTY-LICENSES.txt" prefix="posemuckel-server-bin-0.4/lib"/>
++			<zipfileset dir="../lib" includes="Apache-License.txt" prefix="posemuckel-server-bin-0.4/lib"/>
++			<zipfileset dir="../lib" includes="Common-Public-License.txt" prefix="posemuckel-server-bin-0.4/lib"/>
+ 			<!-- Das doc-Verzeichnis bef??llen -->
+-			<!--tarfileset dir="../doc" includes="" prefix="posemuckel-client-bin-0.4/doc"/-->
+-		<!--/tar>
+-		<gzip src="../dist/posemuckel-server-bin-0.4.tar" destfile="../dist/posemuckel-server-bin-0.4.tgz"/>
+-	 	<delete file="../dist/posemuckel-server-bin-0.4.tar"/>
++			<zipfileset dir="../doc" includes="posemuckel_sag_de.pdf" prefix="posemuckel-server-bin-0.4/doc"/>
++			<zipfileset dir="../doc/userdoc" prefix="posemuckel-server-bin-0.4/doc/userdoc"/>
++			<!-- Das server-Verzeichnis bef??llen -->
++			<zipfileset dir="../server" prefix="posemuckel-server-bin-0.4/server"/>
++		</zip>
+ 		<delete file="../dist/posemuckel-server-0.4.jar"/>
+-</target-->	
++</target>	
+ 
+ 	
+ </project>
+
+Modified: trunk/Posemuckel/lib/3RD-PARTY-LICENSES.txt
+===================================================================
+--- trunk/Posemuckel/lib/3RD-PARTY-LICENSES.txt	2006-03-16 13:50:08 UTC (rev 25)
++++ trunk/Posemuckel/lib/3RD-PARTY-LICENSES.txt	2006-03-19 17:46:04 UTC (rev 26)
+@@ -35,7 +35,7 @@
+ 
+ junit.jar
+ 
+-ist distributet under the terms of the Common Public License.
++is distributet under the terms of the Common Public License.
+ See Common-Public-License.txt for details.
+ 
+ java-getopt-1.0.12.jar
+
+
+
+From papa_pasta at berlios.de  Sun Mar 26 20:00:58 2006
+From: papa_pasta at berlios.de (papa_pasta at BerliOS)
+Date: Sun, 26 Mar 2006 20:00:58 +0200
+Subject: [Posemuckel-svn] r28 - trunk/Posemuckel/src/posemuckel/server
+Message-ID: <200603261800.k2QI0weB024959@sheep.berlios.de>
+
+Author: papa_pasta
+Date: 2006-03-26 20:00:50 +0200 (Sun, 26 Mar 2006)
+New Revision: 28
+
+Modified:
+   trunk/Posemuckel/src/posemuckel/server/ClientMessage.java
+   trunk/Posemuckel/src/posemuckel/server/DB.java
+Log:
+[ Bug #6817 ] Doppelte Projekte
+
+Um dieses Problem zun?\195?\164chst rudiment?\195?\164r zu l?\195?\182sen, habe ich erstmal
+im Server bei der Verarbeitung der START_PROJECT Nachricht eine
+DB-Abfrage eingebaut, ob ein Projekt mit dem angegebenen Namen
+schon existiert. Wenn ja, wird eine ERROR-Nachricht geschickt
+und das Projekt nicht angelegt.
+
+Diese L?\195?\182sung ist nat?\195?\188rlich erstmal nur ein hotfix.
+Sie ist unbefriedigend, weil der User nur sieht, dass ein Fehler
+aufgetreten ist, nicht aber, warum sein Projekt nicht angelegt wurde.
+So oder so wird man wohl langfristig aussagekr?\195?\164ftigere Fehler-
+Nachrichten definieren m?\195?\188ssen. Ich k?\195?\182nnte mir vorstellen, dass
+der Server gleich mit der ERROR-Nachricht eine Beschreibung des
+aufgetretenen Fehlers mitschickt.
+
+Jens
+
+Modified: trunk/Posemuckel/src/posemuckel/server/ClientMessage.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/server/ClientMessage.java	2006-03-20 20:00:05 UTC (rev 27)
++++ trunk/Posemuckel/src/posemuckel/server/ClientMessage.java	2006-03-26 18:00:50 UTC (rev 28)
+@@ -175,6 +175,7 @@
+     		IOException, SQLException {
+ 	    boolean b = true;
+ 	    if (model.isLoggedIn(hash)) {
++	    	// Erstmal alles einlesen:
+ 	    	String user = model.getUser(hash);
+ 	    	String topic = in.readLine();
+ 	    	topic = GetText.escape_sql_write(topic);
+@@ -186,6 +187,24 @@
+ 		    String maxUsers = in.readLine();
+ 		    String description = in.readLine();
+ 	    	description = GetText.escape_sql_write(description);
++	   
++	    	// So, jetzt m?ssen wir schauen, ob es so ein
++	    	// Projekt mit diesem Namen schon gibt.
++	    	try{
++	    		if(data.projectExists(topic)){
++	    			// Wenn ja, wird die Abarbeitung der Anfrage beendet.
++	    			servermess.error(thisclient,"", id);
++	    			return true;
++	    		}
++	    	} catch(SQLException e) {
++	    		// Dieser catch-Block ist hier notwendig,
++	    		// weil nur hier die aktuelle Nachtichten-ID
++	    		// zur Verf?gung steht.
++    			servermess.error(thisclient,"", id);
++    			return true;
++	    	}
++	    	
++	    	// Alles klar, das Projekt kann angelegt werden:
+ 		    Integer c = new Integer(count);
+ 		    String[] userToInvite = GetText.escape_sql_write(parse(in,c.intValue()-4, "START_PROJECT"));
+ 		    int projectID = data.addProject(user, topic, isPrivate,
+
+Modified: trunk/Posemuckel/src/posemuckel/server/DB.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/server/DB.java	2006-03-20 20:00:05 UTC (rev 27)
++++ trunk/Posemuckel/src/posemuckel/server/DB.java	2006-03-26 18:00:50 UTC (rev 28)
+@@ -264,7 +264,6 @@
+ 	 */
+ 	public boolean existsUser(String name) throws SQLException{
+ 		String query = "SELECT nickname FROM user WHERE nickname='"+name+"';";
+-		System.out.println(query);
+ 		dbresult = statement.executeQuery(query);
+ 		if(!dbresult.next()) {
+ 			return false;
+@@ -276,6 +275,24 @@
+ 	}
+ 
+ 	/**
++	 * Gibt an, ob es bereits ein Projekt mit dem angegebenen Namen gibt.
++	 * @param title Titel des Projektes
++	 * @return true, falls es schon ein Projekt mit diesem Namen gibt, false sonst
++	 * @throws SQLException
++	 */
++	public boolean projectExists(String title) throws SQLException{
++		String query = "SELECT project_title FROM projects WHERE project_title='"+title+"';";
++		dbresult = statement.executeQuery(query);
++		if(!dbresult.next()) {
++			return false;
++		} else {
++			checkIP(dbresult.getString("project_title"));
++	    }
++		connection.commit();	
++		return true;
++	}
++	
++	/**
+ 	 * F?gt einen Chattext mit Zeitstempel in die Datenbank ein.
+ 	 * @param text der einzuf?gende Text
+ 	 * @param user Benutzer, der den Text verfasst hat
+
+
+
+From papa_pasta at berlios.de  Sun Mar 26 20:31:59 2006
+From: papa_pasta at berlios.de (papa_pasta at BerliOS)
+Date: Sun, 26 Mar 2006 20:31:59 +0200
+Subject: [Posemuckel-svn] r29 - in trunk/Posemuckel/src/posemuckel: client/gui lang
+Message-ID: <200603261831.k2QIVxlY011413@sheep.berlios.de>
+
+Author: papa_pasta
+Date: 2006-03-26 20:31:56 +0200 (Sun, 26 Mar 2006)
+New Revision: 29
+
+Modified:
+   trunk/Posemuckel/src/posemuckel/client/gui/StartProjectDialog.java
+   trunk/Posemuckel/src/posemuckel/lang/Messages.properties
+   trunk/Posemuckel/src/posemuckel/lang/Messages_de.properties
+   trunk/Posemuckel/src/posemuckel/lang/Messages_en.properties
+Log:
+[ Bug #6815 ] ?\195?\156berschreiten der Max-Teilnehmer durch Einladungen m?\195?\182glich
+
+Wenn maxTeilnehmer-1 ?\195?\188berschritten w?\195?\188rde, wird jetzt eine Message
+angezeigt, dass man entweder die Zahl der maximalen Teilnehmer erh?\195?\182hen
+oder weniger Leute einladen sollte. Dabei wird man selbst als potenzieller
+Teilnehmer ber?\195?\188cksichtigt.
+
+Jens
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/StartProjectDialog.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/StartProjectDialog.java	2006-03-26 18:00:50 UTC (rev 28)
++++ trunk/Posemuckel/src/posemuckel/client/gui/StartProjectDialog.java	2006-03-26 18:31:56 UTC (rev 29)
+@@ -245,8 +245,20 @@
+ 		button_invite.addListener( SWT.Selection,
+ 				 new Listener() {
+ 					public void handleEvent(Event arg0) {
++						boolean ok = true;
++						int max;
++						String num = combo_maxusers.getText();
++						if ( !num.equals("") ) {
++							// Wenn im Feld f?r die maximale Teilnehmerzahl nichts
++							// steht, entf?llt die Pr?fung.
++							max = Integer.valueOf(combo_maxusers.getText());
++							if ( InvitedList.getItemCount() >= max - 1 ) {
++								Messages.showError(GetText.gettext("TOO_MANY_INVITATIONS"),GetText.gettext("TOO_MANY_INVITATIONS_TITLE"));
++								ok = false;
++							}
++						}
+ 						String[] selected = BuddyList.getSelection();
+-						if ( selected.length != 0 ) {
++						if ( ok && selected.length != 0 ) {
+ 							for ( String buddy : selected ) {
+ 								BuddyList.remove(buddy);
+ 								InvitedList.add(buddy);
+
+Modified: trunk/Posemuckel/src/posemuckel/lang/Messages.properties
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/lang/Messages.properties	2006-03-26 18:00:50 UTC (rev 28)
++++ trunk/Posemuckel/src/posemuckel/lang/Messages.properties	2006-03-26 18:31:56 UTC (rev 29)
+@@ -190,6 +190,8 @@
+ TITLE=User Data
+ TITLE2=Title
+ TITLE_FOLDER_NAME=Folder Title
++TOO_MANY_INVITATIONS_TITLE=Too many invitations!
++TOO_MANY_INVITATIONS=You can only invite as many users as given by the maximum participants one (yourself)! Increase the number of participants or invite less users.
+ TYPING=Typing
+ IS_TYPING=is typing
+ ARE_TYPING=are typing
+
+Modified: trunk/Posemuckel/src/posemuckel/lang/Messages_de.properties
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/lang/Messages_de.properties	2006-03-26 18:00:50 UTC (rev 28)
++++ trunk/Posemuckel/src/posemuckel/lang/Messages_de.properties	2006-03-26 18:31:56 UTC (rev 29)
+@@ -190,6 +190,8 @@
+ TITLE=Benutzerdaten
+ TITLE2=Titel
+ TITLE_FOLDER_NAME=Name f?r den Ordner
++TOO_MANY_INVITATIONS_TITLE=Zu viele Einladungen!
++TOO_MANY_INVITATIONS=Es k?nnen nur so viele Benutze eingeladen werden, wie durch die maximale Teilnehmerzahl minus eins (f?r dich selbst) vorgegeben wird! Lade weniger Leute ein oder erh?he die Zahl der m?glichen Teilnehmer.
+ TYPING=Am Tippen
+ IS_TYPING=schreibt
+ ARE_TYPING=schreiben
+
+Modified: trunk/Posemuckel/src/posemuckel/lang/Messages_en.properties
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/lang/Messages_en.properties	2006-03-26 18:00:50 UTC (rev 28)
++++ trunk/Posemuckel/src/posemuckel/lang/Messages_en.properties	2006-03-26 18:31:56 UTC (rev 29)
+@@ -190,6 +190,8 @@
+ TITLE=User Data
+ TITLE2=Title
+ TITLE_FOLDER_NAME=Folder Title
++TOO_MANY_INVITATIONS_TITLE=Too many invitations!
++TOO_MANY_INVITATIONS=You can only invite as many users as given by the maximum participants one (yourself)! Increase the number of participants or invite less users.
+ TYPING=Typing
+ IS_TYPING=is typing
+ ARE_TYPING=are typing
+
+
+

@@ -1,0 +1,134 @@
+From papa_pasta at mail.berlios.de  Mon Aug  7 20:47:33 2006
+From: papa_pasta at mail.berlios.de (papa_pasta at BerliOS)
+Date: Mon, 7 Aug 2006 20:47:33 +0200
+Subject: [Posemuckel-svn] r36 - in trunk/Posemuckel: . dist
+	src/posemuckel/common src/posemuckel/server
+Message-ID: <200608071847.k77IlX2E012978@sheep.berlios.de>
+
+Author: papa_pasta
+Date: 2006-08-07 20:39:59 +0200 (Mon, 07 Aug 2006)
+New Revision: 36
+
+Added:
+   trunk/Posemuckel/dist/posemuckel-client-bin-linux-0.4.1.tgz
+   trunk/Posemuckel/dist/posemuckel-server-bin-0.4.1.zip
+   trunk/Posemuckel/dist/posemuckel-sources-0.4.1.zip
+Modified:
+   trunk/Posemuckel/
+   trunk/Posemuckel/src/posemuckel/common/EnumsAndConstants.java
+   trunk/Posemuckel/src/posemuckel/server/Server.java
+   trunk/Posemuckel/src/posemuckel/server/posemuckel_server.cfg
+Log:
+Aktuelle ?\195?\132nderungen zur Einrichtung auf
+dem Server der Fernuni Hagen.
+
+
+Property changes on: trunk/Posemuckel
+___________________________________________________________________
+Name: svn:ignore
+   + 
+.classpath
+.project
+
+
+Added: trunk/Posemuckel/dist/posemuckel-client-bin-linux-0.4.1.tgz
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/Posemuckel/dist/posemuckel-client-bin-linux-0.4.1.tgz
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: trunk/Posemuckel/dist/posemuckel-server-bin-0.4.1.zip
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/Posemuckel/dist/posemuckel-server-bin-0.4.1.zip
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: trunk/Posemuckel/dist/posemuckel-sources-0.4.1.zip
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/Posemuckel/dist/posemuckel-sources-0.4.1.zip
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Modified: trunk/Posemuckel/src/posemuckel/common/EnumsAndConstants.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/common/EnumsAndConstants.java	2006-04-09 17:04:09 UTC (rev 35)
++++ trunk/Posemuckel/src/posemuckel/common/EnumsAndConstants.java	2006-08-07 18:39:59 UTC (rev 36)
+@@ -24,8 +24,8 @@
+ 	public static final String[] LANG = { "DE", "EN" };
+ 	
+ 	// Der Standard-Port:
+-	public static final String DefaultPort = "8081"; // als String
+-	public static final int PORT = 8081; // als Int
++	public static final String DefaultPort = "20101"; // als String
++	public static final int PORT = 20101; // als Int
+ 	// Die Standard-Adresse:
+ 	public static final String DefaultAddress = "localhost";
+ 	// LS := LineSeparator :-)
+
+Modified: trunk/Posemuckel/src/posemuckel/server/Server.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/server/Server.java	2006-04-09 17:04:09 UTC (rev 35)
++++ trunk/Posemuckel/src/posemuckel/server/Server.java	2006-08-07 18:39:59 UTC (rev 36)
+@@ -69,7 +69,6 @@
+   
+     /**
+      * Beendet den Server
+-     *
+      */
+     public static synchronized void terminate() {
+ 	    terminated = true;
+
+Modified: trunk/Posemuckel/src/posemuckel/server/posemuckel_server.cfg
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/server/posemuckel_server.cfg	2006-04-09 17:04:09 UTC (rev 35)
++++ trunk/Posemuckel/src/posemuckel/server/posemuckel_server.cfg	2006-08-07 18:39:59 UTC (rev 36)
+@@ -25,7 +25,7 @@
+ 
+ # Konfiguration der Netzwerkschnittstelle
+ # Der Port, an dem gelauscht werden soll:
+-LISTEN_PORT=8081
++LISTEN_PORT=20101
+ 
+ # Die Adresse, an der gelauscht werden soll:
+ LISTEN_ADDRESS=localhost
+
+
+
+From papa_pasta at mail.berlios.de  Mon Aug  7 20:49:14 2006
+From: papa_pasta at mail.berlios.de (papa_pasta at BerliOS)
+Date: Mon, 7 Aug 2006 20:49:14 +0200
+Subject: [Posemuckel-svn] r37 - trunk/Posemuckel/dist
+Message-ID: <200608071849.k77InEOb013341@sheep.berlios.de>
+
+Author: papa_pasta
+Date: 2006-08-07 20:49:13 +0200 (Mon, 07 Aug 2006)
+New Revision: 37
+
+Removed:
+   trunk/Posemuckel/dist/posemuckel-server-bin-0.4.1.zip
+   trunk/Posemuckel/dist/posemuckel-sources-0.4.1.zip
+Log:
+L?\195?\182schen ?\195?\188berfl?\195?\188ssiger Dateien. :-(
+
+Deleted: trunk/Posemuckel/dist/posemuckel-server-bin-0.4.1.zip
+===================================================================
+(Binary files differ)
+
+Deleted: trunk/Posemuckel/dist/posemuckel-sources-0.4.1.zip
+===================================================================
+(Binary files differ)
+
+
+

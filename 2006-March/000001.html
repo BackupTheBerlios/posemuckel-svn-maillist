@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Posemuckel-svn] r26 - in trunk/Posemuckel: build-dist lib
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/posemuckel-svn/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r26%20-%20in%20trunk/Posemuckel%3A%20build-dist%20lib&In-Reply-To=%3C200603191746.k2JHkU08002584%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000000.html">
+   <LINK REL="Next"  HREF="000002.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Posemuckel-svn] r26 - in trunk/Posemuckel: build-dist lib</H1>
+    <B>papa_pasta at BerliOS</B> 
+    <A HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r26%20-%20in%20trunk/Posemuckel%3A%20build-dist%20lib&In-Reply-To=%3C200603191746.k2JHkU08002584%40sheep.berlios.de%3E"
+       TITLE="[Posemuckel-svn] r26 - in trunk/Posemuckel: build-dist lib">papa_pasta at berlios.de
+       </A><BR>
+    <I>Sun Mar 19 18:46:30 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000000.html">[Posemuckel-svn] r25 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer
+</A></li>
+        <LI>Next message: <A HREF="000002.html">[Posemuckel-svn] r28 - trunk/Posemuckel/src/posemuckel/server
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1">[ date ]</a>
+              <a href="thread.html#1">[ thread ]</a>
+              <a href="subject.html#1">[ subject ]</a>
+              <a href="author.html#1">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: papa_pasta
+Date: 2006-03-19 18:46:04 +0100 (Sun, 19 Mar 2006)
+New Revision: 26
+
+Added:
+   trunk/Posemuckel/build-dist/INSTALL-de-server.txt
+   trunk/Posemuckel/build-dist/INSTALL-server.txt
+Modified:
+   trunk/Posemuckel/build-dist/build.xml
+   trunk/Posemuckel/lib/3RD-PARTY-LICENSES.txt
+Log:
+Dem Ant build-file wurde das (zuvor auskommentierte) Target
+server-bin-zip hinzugef?\195?\188gt. Es erzeugt ein ZIP-Archiv, in dem
+das server-jar zusammen mit ein paar Doku-Teilen, PHP-Scripten,
+einer Besipiel-Konfiguration und einer knappen Installations-
+anleitung daher kommt.
+Die erzeugte Datei wird im Verzeichnins dist abgelegt.
+
+Ich bitte um Tests.
+
+Jens
+
+Added: trunk/Posemuckel/build-dist/INSTALL-de-server.txt
+===================================================================
+--- trunk/Posemuckel/build-dist/INSTALL-de-server.txt	2006-03-16 13:50:08 UTC (rev 25)
++++ trunk/Posemuckel/build-dist/INSTALL-de-server.txt	2006-03-19 17:46:04 UTC (rev 26)
+@@ -0,0 +1,22 @@
++So bringst du den Server zum Laufen:
++
++1. Installiere java 1.5, mysql, apache und php4. Daf&#252;r kannst du auch XAMPP
++   nehmen. Wenn der Server auch Einladungen per Mail verschicken soll, ben&#246;tigst
++   du noch einen MTA wie postfix oder so.
++
++2. Apache muss server/www als Wurzelverzeichnis nehmen und dort die
++   php4 Scripte ausf&#252;hren. Das Verzeichnis doc muss auf doc in diesem Verzeichis hier
++   zeigen, wenn auf der Website auch Doku zu sehen sein soll. Eine besipielhafte
++   httpd.conf liegt in server/conf/.
++   
++3. F&#252;r MySQL ben&#246;tigst du einen Benutzer und ein Passwort f&#252;r eine neue DB. Diese DB
++   kann dann wie folgt angelegt werden:
++   mysql -u [user] -p &lt; server/db.sql
++
++4. Die Konfigurationsdatei posemuckel_server.cfg muss nun auch angepasst werden. Lies hierzu
++   bitte die Kommentare in der Datei. Wenn du z.B. einen MTA installiert hast, dann musst du
++   DO_SENDMAIL auf yes setzen und die Kommandozeile des Aufrufs zum Verschicken von Mails
++   anpassen.
++   
++5. Starte den Server wie folgt:
++   java -jar posemuckel-server-0.4.jar -c posemuckel_server.cfg
+\ No newline at end of file
+
+Added: trunk/Posemuckel/build-dist/INSTALL-server.txt
+===================================================================
+--- trunk/Posemuckel/build-dist/INSTALL-server.txt	2006-03-16 13:50:08 UTC (rev 25)
++++ trunk/Posemuckel/build-dist/INSTALL-server.txt	2006-03-19 17:46:04 UTC (rev 26)
+@@ -0,0 +1,22 @@
++To install and run the server, do this:
++
++1. Install java 1.5, mysql, apache and php4. You can use XAMPP, for example. If you want
++   your Server to send mail invitations to users, you will probably need
++   a mail transfer agent like postfix etc.
++
++2. Configure apache to use server/www as document root and to execute
++   php4 script files in this directory. Redirect doc to the doc directory,
++   if you want to present some documentation on the site. An example httpd.conf
++   file can be found in server/conf/.
++   
++3. Create a DB user for MySQL and create the posemuckel Database using server/db.sql.
++   For example like this:
++   mysql -u [user] -p &lt; server/db.sql
++
++4. Edit the example posemuckel server configuration file named posemuckel_server.cfg.
++   If you have installed a mail transfer agent, then you schould set DO_SENDMAIL to yes
++   and configure the command line used.
++   
++5. Run the server using this command:
++   java -jar posemuckel-server-0.4.jar -c posemuckel_server.cfg
++   
+\ No newline at end of file
+
+Modified: trunk/Posemuckel/build-dist/build.xml
+===================================================================
+--- trunk/Posemuckel/build-dist/build.xml	2006-03-16 13:50:08 UTC (rev 25)
++++ trunk/Posemuckel/build-dist/build.xml	2006-03-19 17:46:04 UTC (rev 26)
+@@ -182,9 +182,9 @@
+ &lt;/target&gt;	
+ 	
+ 	
+-&lt;!--target name=&quot;server&quot; description=&quot;generate the server jar&quot; --&gt;
++&lt;target name=&quot;server&quot; description=&quot;generate the server jar&quot;&gt;
+ 		&lt;!-- Erzeuge eine JAR-Datei f&#195;&#188;r den Server --&gt;
+-		&lt;!--jar jarfile=&quot;../dist/posemuckel-server-0.4.jar&quot;&gt;
++		&lt;jar jarfile=&quot;../dist/posemuckel-server-0.4.jar&quot;&gt;
+ 	    	&lt;fileset dir=&quot;../bin&quot;&gt;
+ 	    		&lt;exclude name=&quot;posemuckel/client/**&quot;/&gt;
+ 	    		&lt;exclude name=&quot;**/*Test*&quot;/&gt;
+@@ -199,42 +199,40 @@
+ 			 &lt;attribute name=&quot;Class-Path&quot; value=&quot;lib/log4j-1.2.12.jar lib/mysql-connector-java-3.1.11-bin.jar lib/java-getopt-1.0.12.jar&quot;/&gt;
+ 			&lt;/manifest&gt;
+ 		&lt;/jar&gt;
+-&lt;/target--&gt;
++&lt;/target&gt;
+ 	
+ &lt;!--Server-
+-Das nachfolgende Target erzeugt ein mit Gzip komprimiertes Tar-Archiv.
+-Dieses Target l&#195;&#164;uft nur unter Linux!
++Das nachfolgende Target erzeugt ein ZIP-Archiv.
+ 
+-Zun&#195;&#164;chst wird aber erstmal ein JAR speziell f&#195;&#188;r Linux erszeugt.
++Zun&#195;&#164;chst wird aber erstmal ein JAR erzeugt.
+ Daf&#195;&#188;r sorgt die Abh&#195;&#164;ngigkeit dieses Targets.
+-
+-Das l&#195;&#164;uft hier so ab:
+-2. l&#195;&#182;sche das alte tgz-Archiv
+-3. stelle erstmal ein tar-Archiv zusammen
+-4. komprimiere das tar
+-5. l&#195;&#182;sche &#195;&#188;berfl&#195;&#188;ssige Dateien, damit von diesem Prozess nur das tgz &#195;&#188;brig bleibt
+ --&gt;
+-&lt;!--target name=&quot;server-bin-tgz&quot; depends=&quot;server&quot; description=&quot;generate the server linux distribution&quot; &gt;
+- 		&lt;delete file=&quot;../dist/posemuckel-server-bin-0.4.tgz&quot;/--&gt;
++&lt;target name=&quot;server-bin-zip&quot; depends=&quot;server&quot; description=&quot;generate the server linux distribution&quot; &gt;
++ 		&lt;delete file=&quot;../dist/posemuckel-server-bin-0.4.zip&quot;/&gt;
+ 		&lt;!-- Erzeuge eine Tar-Gzip-Datei mit dem Client drin --&gt;
+-		&lt;!--tar destfile=&quot;../dist/posemuckel-server-bin-0.4.tar&quot;&gt;
+-			&lt;tarfileset dir=&quot;.&quot; includes=&quot;LICENSE.txt&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
+-			&lt;tarfileset dir=&quot;.&quot; includes=&quot;AUTHORS.txt&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../dist&quot; includes=&quot;posemuckel-server-0.4.jar&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/--&gt;
++		&lt;zip destfile=&quot;../dist/posemuckel-server-bin-0.4.zip&quot;&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;LICENSE.txt&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;AUTHORS.txt&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;README.txt&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;INSTALL-server.txt&quot; fullpath=&quot;posemuckel-server-bin-0.4/INSTALL.txt&quot;/&gt;
++			&lt;zipfileset dir=&quot;.&quot; includes=&quot;INSTALL-de-server.txt&quot; fullpath=&quot;posemuckel-server-bin-0.4/INSTALL-de.txt&quot;/&gt;
++			&lt;zipfileset dir=&quot;../dist&quot; includes=&quot;posemuckel-server-0.4.jar&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
++			&lt;zipfileset file=&quot;../src/posemuckel/server/posemuckel_server.cfg&quot; prefix=&quot;posemuckel-server-bin-0.4&quot;/&gt;
+ 			&lt;!-- Das lib-Verzeichnis bef&#195;&#188;llen --&gt;
+-			&lt;!--tarfileset dir=&quot;../lib&quot; includes=&quot;log4j-1.2.12.jar&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;java-getopt-1.0.12.jar&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;mysql-connector-java-3.1.11-bin.jar&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;				
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;3RD-PARTY-LICENSES.txt&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;Apache-License.txt&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/&gt;
+-			&lt;tarfileset dir=&quot;../lib&quot; includes=&quot;Common-Public-License.txt&quot; prefix=&quot;posemuckel-client-bin-0.4/lib&quot;/--&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;log4j-1.2.12.jar&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;java-getopt-1.0.12.jar&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;mysql-connector-java-3.1.11-bin.jar&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;				
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;3RD-PARTY-LICENSES.txt&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;Apache-License.txt&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
++			&lt;zipfileset dir=&quot;../lib&quot; includes=&quot;Common-Public-License.txt&quot; prefix=&quot;posemuckel-server-bin-0.4/lib&quot;/&gt;
+ 			&lt;!-- Das doc-Verzeichnis bef&#195;&#188;llen --&gt;
+-			&lt;!--tarfileset dir=&quot;../doc&quot; includes=&quot;&quot; prefix=&quot;posemuckel-client-bin-0.4/doc&quot;/--&gt;
+-		&lt;!--/tar&gt;
+-		&lt;gzip src=&quot;../dist/posemuckel-server-bin-0.4.tar&quot; destfile=&quot;../dist/posemuckel-server-bin-0.4.tgz&quot;/&gt;
+-	 	&lt;delete file=&quot;../dist/posemuckel-server-bin-0.4.tar&quot;/&gt;
++			&lt;zipfileset dir=&quot;../doc&quot; includes=&quot;posemuckel_sag_de.pdf&quot; prefix=&quot;posemuckel-server-bin-0.4/doc&quot;/&gt;
++			&lt;zipfileset dir=&quot;../doc/userdoc&quot; prefix=&quot;posemuckel-server-bin-0.4/doc/userdoc&quot;/&gt;
++			&lt;!-- Das server-Verzeichnis bef&#195;&#188;llen --&gt;
++			&lt;zipfileset dir=&quot;../server&quot; prefix=&quot;posemuckel-server-bin-0.4/server&quot;/&gt;
++		&lt;/zip&gt;
+ 		&lt;delete file=&quot;../dist/posemuckel-server-0.4.jar&quot;/&gt;
+-&lt;/target--&gt;	
++&lt;/target&gt;	
+ 
+ 	
+ &lt;/project&gt;
+
+Modified: trunk/Posemuckel/lib/3RD-PARTY-LICENSES.txt
+===================================================================
+--- trunk/Posemuckel/lib/3RD-PARTY-LICENSES.txt	2006-03-16 13:50:08 UTC (rev 25)
++++ trunk/Posemuckel/lib/3RD-PARTY-LICENSES.txt	2006-03-19 17:46:04 UTC (rev 26)
+@@ -35,7 +35,7 @@
+ 
+ junit.jar
+ 
+-ist distributet under the terms of the Common Public License.
++is distributet under the terms of the Common Public License.
+ See Common-Public-License.txt for details.
+ 
+ java-getopt-1.0.12.jar
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000000.html">[Posemuckel-svn] r25 - trunk/Posemuckel/src/posemuckel/client/gui/resultsviewer
+</A></li>
+	<LI>Next message: <A HREF="000002.html">[Posemuckel-svn] r28 - trunk/Posemuckel/src/posemuckel/server
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1">[ date ]</a>
+              <a href="thread.html#1">[ thread ]</a>
+              <a href="subject.html#1">[ subject ]</a>
+              <a href="author.html#1">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/posemuckel-svn">More information about the Posemuckel-svn
+mailing list</a><br>
+</body></html>

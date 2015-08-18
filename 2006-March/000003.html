@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Posemuckel-svn] r29 - in trunk/Posemuckel/src/posemuckel: client/gui lang
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/posemuckel-svn/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r29%20-%20in%20trunk/Posemuckel/src/posemuckel%3A%20client/gui%20lang&In-Reply-To=%3C200603261831.k2QIVxlY011413%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000002.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Posemuckel-svn] r29 - in trunk/Posemuckel/src/posemuckel: client/gui lang</H1>
+    <B>papa_pasta at BerliOS</B> 
+    <A HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r29%20-%20in%20trunk/Posemuckel/src/posemuckel%3A%20client/gui%20lang&In-Reply-To=%3C200603261831.k2QIVxlY011413%40sheep.berlios.de%3E"
+       TITLE="[Posemuckel-svn] r29 - in trunk/Posemuckel/src/posemuckel: client/gui lang">papa_pasta at berlios.de
+       </A><BR>
+    <I>Sun Mar 26 20:31:59 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000002.html">[Posemuckel-svn] r28 - trunk/Posemuckel/src/posemuckel/server
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#3">[ date ]</a>
+              <a href="thread.html#3">[ thread ]</a>
+              <a href="subject.html#3">[ subject ]</a>
+              <a href="author.html#3">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: papa_pasta
+Date: 2006-03-26 20:31:56 +0200 (Sun, 26 Mar 2006)
+New Revision: 29
+
+Modified:
+   trunk/Posemuckel/src/posemuckel/client/gui/StartProjectDialog.java
+   trunk/Posemuckel/src/posemuckel/lang/Messages.properties
+   trunk/Posemuckel/src/posemuckel/lang/Messages_de.properties
+   trunk/Posemuckel/src/posemuckel/lang/Messages_en.properties
+Log:
+[ Bug #6815 ] ?\195?\156berschreiten der Max-Teilnehmer durch Einladungen m?\195?\182glich
+
+Wenn maxTeilnehmer-1 ?\195?\188berschritten w?\195?\188rde, wird jetzt eine Message
+angezeigt, dass man entweder die Zahl der maximalen Teilnehmer erh?\195?\182hen
+oder weniger Leute einladen sollte. Dabei wird man selbst als potenzieller
+Teilnehmer ber?\195?\188cksichtigt.
+
+Jens
+
+Modified: trunk/Posemuckel/src/posemuckel/client/gui/StartProjectDialog.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/client/gui/StartProjectDialog.java	2006-03-26 18:00:50 UTC (rev 28)
++++ trunk/Posemuckel/src/posemuckel/client/gui/StartProjectDialog.java	2006-03-26 18:31:56 UTC (rev 29)
+@@ -245,8 +245,20 @@
+ 		button_invite.addListener( SWT.Selection,
+ 				 new Listener() {
+ 					public void handleEvent(Event arg0) {
++						boolean ok = true;
++						int max;
++						String num = combo_maxusers.getText();
++						if ( !num.equals(&quot;&quot;) ) {
++							// Wenn im Feld f&#252;r die maximale Teilnehmerzahl nichts
++							// steht, entf&#228;llt die Pr&#252;fung.
++							max = Integer.valueOf(combo_maxusers.getText());
++							if ( InvitedList.getItemCount() &gt;= max - 1 ) {
++								Messages.showError(GetText.gettext(&quot;TOO_MANY_INVITATIONS&quot;),GetText.gettext(&quot;TOO_MANY_INVITATIONS_TITLE&quot;));
++								ok = false;
++							}
++						}
+ 						String[] selected = BuddyList.getSelection();
+-						if ( selected.length != 0 ) {
++						if ( ok &amp;&amp; selected.length != 0 ) {
+ 							for ( String buddy : selected ) {
+ 								BuddyList.remove(buddy);
+ 								InvitedList.add(buddy);
+
+Modified: trunk/Posemuckel/src/posemuckel/lang/Messages.properties
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/lang/Messages.properties	2006-03-26 18:00:50 UTC (rev 28)
++++ trunk/Posemuckel/src/posemuckel/lang/Messages.properties	2006-03-26 18:31:56 UTC (rev 29)
+@@ -190,6 +190,8 @@
+ TITLE=User Data
+ TITLE2=Title
+ TITLE_FOLDER_NAME=Folder Title
++TOO_MANY_INVITATIONS_TITLE=Too many invitations!
++TOO_MANY_INVITATIONS=You can only invite as many users as given by the maximum participants one (yourself)! Increase the number of participants or invite less users.
+ TYPING=Typing
+ IS_TYPING=is typing
+ ARE_TYPING=are typing
+
+Modified: trunk/Posemuckel/src/posemuckel/lang/Messages_de.properties
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/lang/Messages_de.properties	2006-03-26 18:00:50 UTC (rev 28)
++++ trunk/Posemuckel/src/posemuckel/lang/Messages_de.properties	2006-03-26 18:31:56 UTC (rev 29)
+@@ -190,6 +190,8 @@
+ TITLE=Benutzerdaten
+ TITLE2=Titel
+ TITLE_FOLDER_NAME=Name f&#252;r den Ordner
++TOO_MANY_INVITATIONS_TITLE=Zu viele Einladungen!
++TOO_MANY_INVITATIONS=Es k&#246;nnen nur so viele Benutze eingeladen werden, wie durch die maximale Teilnehmerzahl minus eins (f&#252;r dich selbst) vorgegeben wird! Lade weniger Leute ein oder erh&#246;he die Zahl der m&#246;glichen Teilnehmer.
+ TYPING=Am Tippen
+ IS_TYPING=schreibt
+ ARE_TYPING=schreiben
+
+Modified: trunk/Posemuckel/src/posemuckel/lang/Messages_en.properties
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/lang/Messages_en.properties	2006-03-26 18:00:50 UTC (rev 28)
++++ trunk/Posemuckel/src/posemuckel/lang/Messages_en.properties	2006-03-26 18:31:56 UTC (rev 29)
+@@ -190,6 +190,8 @@
+ TITLE=User Data
+ TITLE2=Title
+ TITLE_FOLDER_NAME=Folder Title
++TOO_MANY_INVITATIONS_TITLE=Too many invitations!
++TOO_MANY_INVITATIONS=You can only invite as many users as given by the maximum participants one (yourself)! Increase the number of participants or invite less users.
+ TYPING=Typing
+ IS_TYPING=is typing
+ ARE_TYPING=are typing
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000002.html">[Posemuckel-svn] r28 - trunk/Posemuckel/src/posemuckel/server
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#3">[ date ]</a>
+              <a href="thread.html#3">[ thread ]</a>
+              <a href="subject.html#3">[ subject ]</a>
+              <a href="author.html#3">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/posemuckel-svn">More information about the Posemuckel-svn
+mailing list</a><br>
+</body></html>

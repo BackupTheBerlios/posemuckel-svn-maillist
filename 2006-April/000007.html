@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Posemuckel-svn] r33 - trunk/Posemuckel/src/posemuckel
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/posemuckel-svn/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r33%20-%20trunk/Posemuckel/src/posemuckel&In-Reply-To=%3C200604091544.k39FiSgY025634%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000006.html">
+   <LINK REL="Next"  HREF="000008.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Posemuckel-svn] r33 - trunk/Posemuckel/src/posemuckel</H1>
+    <B>tabu at berlios.de</B> 
+    <A HREF="mailto:posemuckel-svn%40lists.berlios.de?Subject=Re%3A%20%5BPosemuckel-svn%5D%20r33%20-%20trunk/Posemuckel/src/posemuckel&In-Reply-To=%3C200604091544.k39FiSgY025634%40sheep.berlios.de%3E"
+       TITLE="[Posemuckel-svn] r33 - trunk/Posemuckel/src/posemuckel">tabu at berlios.de
+       </A><BR>
+    <I>Sun Apr  9 17:44:28 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000006.html">[Posemuckel-svn] r32 - trunk/Posemuckel/doc/userdoc
+</A></li>
+        <LI>Next message: <A HREF="000008.html">[Posemuckel-svn] r34 - in trunk/Posemuckel/src/posemuckel/client/model: . event
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#7">[ date ]</a>
+              <a href="thread.html#7">[ thread ]</a>
+              <a href="subject.html#7">[ subject ]</a>
+              <a href="author.html#7">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: tabu
+Date: 2006-04-09 17:44:16 +0200 (Sun, 09 Apr 2006)
+New Revision: 33
+
+Modified:
+   trunk/Posemuckel/src/posemuckel/AllClientModelTests.java
+   trunk/Posemuckel/src/posemuckel/AllTests.java
+   trunk/Posemuckel/src/posemuckel/AllTestsOnRunningServer.java
+Log:
+Habe ein paar Kommentare hinzugef?\195?\188gt
+
+tanja
+
+Modified: trunk/Posemuckel/src/posemuckel/AllClientModelTests.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/AllClientModelTests.java	2006-04-09 15:42:55 UTC (rev 32)
++++ trunk/Posemuckel/src/posemuckel/AllClientModelTests.java	2006-04-09 15:44:16 UTC (rev 33)
+@@ -21,7 +21,12 @@
+  *
+  */
+ public class AllClientModelTests {
+-
++	
++	/**
++	 * Erstellt einen JUnit-Test zum Testen der Funktionalit&#228;t
++	 * des Clients
++	 * @return Test f&#252;r die Client-Funktionen
++	 */
+ 	public static Test suite() {
+ 		TestSuite suite = new TestSuite(&quot;Test for posemuckel&quot;);
+ 		//$JUnit-BEGIN$
+
+Modified: trunk/Posemuckel/src/posemuckel/AllTests.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/AllTests.java	2006-04-09 15:42:55 UTC (rev 32)
++++ trunk/Posemuckel/src/posemuckel/AllTests.java	2006-04-09 15:44:16 UTC (rev 33)
+@@ -24,6 +24,12 @@
+  */
+ public class AllTests {
+ 	
++	/**
++	 * Erstellt einen JUnit-Test mit allen Tests, die keinen laufenden
++	 * Server ben&#246;tigen.
++	 * 
++	 * @return Test, der keinen Server ben&#246;tigt
++	 */
+ 	public static Test suite() {
+ 		BasicConfigurator.configure();
+ 		TestSuite suite = new TestSuite(&quot;Test for posemuckel&quot;);
+
+Modified: trunk/Posemuckel/src/posemuckel/AllTestsOnRunningServer.java
+===================================================================
+--- trunk/Posemuckel/src/posemuckel/AllTestsOnRunningServer.java	2006-04-09 15:42:55 UTC (rev 32)
++++ trunk/Posemuckel/src/posemuckel/AllTestsOnRunningServer.java	2006-04-09 15:44:16 UTC (rev 33)
+@@ -7,7 +7,7 @@
+ import posemuckel.server.ServerStop;
+ 
+ /**
+- * hier werden alle Tests eingetragen, die &uuml;ber localhost auf den 
++ * Hier werden alle Tests eingetragen, die &uuml;ber localhost auf den 
+  * Server zugreifen; der Server wird zu Beginn in einem Thread gestartet
+  * und am Ende der Testsuite wieder gestoppt. Die Reihenfolge der Tests kann
+  * nur bedingt ge&#228;ndert werden: das Starten und Stoppen des Server sollte nicht
+@@ -37,7 +37,13 @@
+  *
+  */
+ public class AllTestsOnRunningServer {
+-
++	
++	/**
++	 * Erstellt einen JUnit-Test mit allen Tests, die einen laufenden
++	 * Server ben&#246;tigen.
++	 * 
++	 * @return Test, der einen laufenden Server ben&#246;tigt
++	 */
+ 	public static Test suite() {
+ 		TestSuite suite = new TestSuite(&quot;Test for posemuckel&quot;);
+ 		//$JUnit-BEGIN$
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000006.html">[Posemuckel-svn] r32 - trunk/Posemuckel/doc/userdoc
+</A></li>
+	<LI>Next message: <A HREF="000008.html">[Posemuckel-svn] r34 - in trunk/Posemuckel/src/posemuckel/client/model: . event
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#7">[ date ]</a>
+              <a href="thread.html#7">[ thread ]</a>
+              <a href="subject.html#7">[ subject ]</a>
+              <a href="author.html#7">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/posemuckel-svn">More information about the Posemuckel-svn
+mailing list</a><br>
+</body></html>
